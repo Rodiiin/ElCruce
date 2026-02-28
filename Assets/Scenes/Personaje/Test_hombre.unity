@@ -456,14 +456,19 @@ MonoBehaviour:
   velocidad: 5
   suavizado: 0.05
   fuerzaSalto: 12
+  fuerzaSegundoSalto: 0.1
   detectorSuelo: {fileID: 65449835}
-  radioDeteccion: 0.2
+  radioDeteccion: 0.29
   capaSuelo:
     serializedVersion: 2
     m_Bits: 64
-  fuerzaImpulso: 5
+  saltosMaximos: 2
+  fuerzaImpulso: 8
   duracionParpadeo: 0.5
-  vidasMaximas: 3
+  vidasMaximas: 2
+  velocidadDash: 20
+  duracionDash: 0.2
+  cooldownDash: 1
 --- !u!95 &1302029711
 Animator:
   serializedVersion: 5

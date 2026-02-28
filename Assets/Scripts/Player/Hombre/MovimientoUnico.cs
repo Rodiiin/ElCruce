@@ -10,9 +10,13 @@ public class MovimientoUnico : MonoBehaviour
 
     [Header("Configuración Salto")]
     public float fuerzaSalto = 5f;
+    public float fuerzaSegundoSalto = 0.001f;
     public Transform detectorSuelo; // Un objeto vacío en los pies del personaje
-    public float radioDeteccion = 0.2f;
+    public float radioDeteccion = 0.9f;
     public LayerMask capaSuelo; // Selecciona la capa del suelo en el inspector
+    //Para el doble salto
+    public int saltosMaximos = 2;
+    private int saltosRealizados;
 
     [Header("Configuración Daño")]
     public float fuerzaImpulso = 5f;
@@ -23,6 +27,13 @@ public class MovimientoUnico : MonoBehaviour
     private int vidasActuales;
     private bool estaMuerto = false;
 
+    [Header("Configuración Dash")]
+    public float velocidadDash = 20f;
+    public float duracionDash = 0.2f;
+    public float cooldownDash = 1f;
+    private bool estaHaciendoDash = false;
+    private bool dashDisponible = true;
+    private float gravedadOriginal;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -41,6 +52,9 @@ public class MovimientoUnico : MonoBehaviour
 
         vidasActuales = vidasMaximas;
 
+        gravedadOriginal = rb.gravityScale; 
+
+
     }
 
     // Update is called once per frame
@@ -48,7 +62,13 @@ public class MovimientoUnico : MonoBehaviour
     {
 
         // --- No permitir movimiento si está recibiendo daño
-        if (recibiendoDaño || estaMuerto) return;
+        if (recibiendoDaño || estaMuerto || estaHaciendoDash) return;
+
+        //Presionar leftShift para el dash
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashDisponible)
+        {
+            StartCoroutine(RealizarDash());
+        }
 
         // Detectar entrada
         mover = Input.GetAxis("Horizontal");
@@ -67,10 +87,34 @@ public class MovimientoUnico : MonoBehaviour
         // Verificamos si tocamos el suelo
         estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
 
-        if (Input.GetKeyDown(KeyCode.W) && estaEnSuelo)
+        if (estaEnSuelo)
         {
-            rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
-            if (animator != null) animator.SetTrigger("Jump"); 
+            saltosRealizados = 0;
+        }
+
+        if (Input.GetKeyDown(KeyCode.W) )
+        {
+            if (estaEnSuelo || saltosRealizados < saltosMaximos)
+        {
+            // Aplicar fuerza (reseteamos velocidad vertical antes para salto uniforme)
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            
+            if (saltosRealizados == 0)
+                {
+                    // Primer salto
+                    rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    // Segundo salto 
+                    rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
+                }
+            
+            saltosRealizados++;
+            
+            // Trigger de animación (puedes usar el mismo trigger de salto)
+            if (animator != null) animator.SetTrigger("Jump");
+        }
         }
 
         // --- ACTUALIZAR PARÁMETROS DE ANIMACIÓN ---
@@ -86,7 +130,7 @@ public class MovimientoUnico : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (rb == null || recibiendoDaño || estaMuerto) return;
+        if (rb == null || recibiendoDaño || estaMuerto|| estaHaciendoDash) return;
 
         // Aplicamos el movimiento físico
         Vector2 velocidadObjetivo = new Vector2(mover * velocidad, rb.velocity.y);
@@ -127,14 +171,25 @@ public class MovimientoUnico : MonoBehaviour
         estaMuerto = true;
         recibiendoDaño = false; // Ya no recibe daño, está muerto
         
+        // Ajustar el collider dspues de la muerte
+        BoxCollider2D collider = GetComponent<BoxCollider2D>();
+        if (collider != null)
+        {
+            // Reducimos la altura a la mitad, por ejemplo
+            collider.size = new Vector2(collider.size.x, collider.size.y * 0.09f);
+            // Ajustamos el centro para que la parte inferior siga en el suelo
+            collider.offset = new Vector2(collider.offset.x, collider.offset.y - (collider.size.y * .9f));
+        }
+
         
+
+        // Cambiar capa para colisionar solo con el suelo ---
+        gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
+
         // Activar animación de muerte
         if (animator != null) animator.SetTrigger("Death");
-        
-        transform.position = new Vector3(transform.position.x, transform.position.y - 0.2f, transform.position.z);
-        // Opcional: Desactivar colisiones o física para que no interfiera
-        rb.velocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Static; // El cuerpo se queda quieto en el suelo
+
+        this.enabled = false;
         
         Debug.Log("El jugador ha muerto");
         // Aquí podrías llamar a una pantalla de Game Over
@@ -148,7 +203,33 @@ public class MovimientoUnico : MonoBehaviour
         recibiendoDaño = false; // Permitir movimiento de nuevo
     }
 
+    private IEnumerator RealizarDash()
+    {
+        dashDisponible = false;
+        estaHaciendoDash = true;
 
+        // 1. Activar animación
+        if (animator != null) animator.SetTrigger("Dash");
+
+        // 2. Aplicar velocidad de dash (ignorar gravedad)
+        rb.gravityScale = 0f;
+
+        // Dash hacia donde mira el personaje
+        float direccionDash = spriteRenderer.flipX ? 1f : -1f; 
+        rb.velocity = new Vector2(direccionDash * velocidadDash, 0f);
+
+        // 3. Esperar duración del dash
+        yield return new WaitForSeconds(duracionDash);
+
+        // 4. Finalizar dash
+        rb.gravityScale = gravedadOriginal;
+
+        estaHaciendoDash = false;
+
+        // 5. Cooldown
+        yield return new WaitForSeconds(cooldownDash);
+        dashDisponible = true;
+    }
 
 
 
