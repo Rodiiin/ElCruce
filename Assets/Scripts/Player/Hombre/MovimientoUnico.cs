@@ -84,8 +84,7 @@ public class MovimientoUnico : MonoBehaviour
         }
 
         // - Lógica de salto (Detección) ---
-        // Verificamos si tocamos el suelo
-        estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
+        
 
         if (estaEnSuelo)
         {
@@ -97,7 +96,7 @@ public class MovimientoUnico : MonoBehaviour
             if (estaEnSuelo || saltosRealizados < saltosMaximos)
         {
             // Aplicar fuerza (reseteamos velocidad vertical antes para salto uniforme)
-            rb.velocity = new Vector2(rb.velocity.x, 0);
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
             
             if (saltosRealizados == 0)
                 {
@@ -130,6 +129,9 @@ public class MovimientoUnico : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Verificamos si tocamos el suelo
+        estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
+
         if (rb == null || recibiendoDaño || estaMuerto|| estaHaciendoDash) return;
 
         // Aplicamos el movimiento físico
