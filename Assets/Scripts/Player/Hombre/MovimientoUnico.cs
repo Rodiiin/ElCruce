@@ -35,6 +35,14 @@ public class MovimientoUnico : MonoBehaviour
     private bool dashDisponible = true;
     private float gravedadOriginal;
 
+    [Header("Configuración Ataque")]
+    public float tiempoAtaque = 0.3f; // Cuánto dura la animación/hitbox
+    public float cooldownAtaque = 0.2f; // Tiempo entre ataques
+    private bool atacando = false;
+    private bool ataqueDisponible = true;
+
+
+
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -62,12 +70,17 @@ public class MovimientoUnico : MonoBehaviour
     {
 
         // --- No permitir movimiento si está recibiendo daño
-        if (recibiendoDaño || estaMuerto || estaHaciendoDash) return;
+        if (recibiendoDaño || estaMuerto || estaHaciendoDash || atacando) return;
 
         //Presionar leftShift para el dash
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashDisponible)
         {
             StartCoroutine(RealizarDash());
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && ataqueDisponible)
+        {
+            StartCoroutine(RealizarAtaque());
         }
 
         // Detectar entrada
@@ -234,7 +247,24 @@ public class MovimientoUnico : MonoBehaviour
     }
 
 
+    private IEnumerator RealizarAtaque()
+    {
+        ataqueDisponible = false;
+        atacando = true;
 
+        // 1. Activar animación
+        if (animator != null) animator.SetTrigger("Attack");
+
+        // 3. Esperar duración del ataque (hitbox activa)
+        yield return new WaitForSeconds(tiempoAtaque);
+
+        // 4. Finalizar ataque
+        atacando = false;
+
+        // 5. Cooldown antes de poder atacar de nuevo
+        yield return new WaitForSeconds(cooldownAtaque);
+        ataqueDisponible = true;
+    }
 
 
     // --- VISUALIZACIÓN DE GIZMOS ---
