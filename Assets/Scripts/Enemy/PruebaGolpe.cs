@@ -7,7 +7,7 @@ public class PruebaGolpe : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Si chocamos con el jugador
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Player2"))
         {
             // Calculamos la dirección del golpe (desde el enemigo hacia el jugador)
             Vector2 direccion = collision.transform.position - transform.position;
