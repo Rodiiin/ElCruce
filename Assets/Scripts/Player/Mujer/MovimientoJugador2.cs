@@ -101,16 +101,18 @@ public class MovimientoJugador2 : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x, 0f);
 
-                if (saltosRealizados == 0)
+                if (saltosRealizados == 0 && estaEnSuelo)
                 {
                     rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+                    saltosRealizados++;
                 }
-                else
+                else if(saltosRealizados < saltosMaximos   )
                 {
                     rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
+                    saltosRealizados++;
                 }
 
-                saltosRealizados++;
+                
 
                 if (animator != null) animator.SetTrigger("Jump");
             }

@@ -148,11 +148,10 @@ public class MovimientoUnico : MonoBehaviour
         if (rb == null || recibiendoDaño || estaMuerto|| estaHaciendoDash) return;
 
         // Aplicamos el movimiento físico
-        Vector2 velocidadObjetivo = new Vector2(mover * velocidad, rb.velocity.y);
+        float velocidadX = mover * velocidad;
         
         // Detener el movimiento inmediatamente al soltar
-        rb.velocity = Vector2.SmoothDamp(rb.velocity, velocidadObjetivo, ref velocidadSuavizada, suavizado);
-        
+        rb.velocity = new Vector2(velocidadX, rb.velocity.y);        
     }
 
     // --- Método para recibir daño 
