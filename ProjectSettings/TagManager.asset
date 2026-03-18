@@ -17,7 +17,7 @@ TagManager:
   - Suelo
   - DeadPlayer
   - Roca
-  - 
+  - Player
   - 
   - 
   - 
@@ -43,4 +43,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Fondo
+    uniqueID: 797127339
+    locked: 0
+  - name: Obstaculos
+    uniqueID: 474464539
+    locked: 0
+  - name: Player
+    uniqueID: 142350699
+    locked: 0
+  - name: Objetos Equipables
+    uniqueID: 213578111
+    locked: 0
+  - name: UI
+    uniqueID: 48968653
     locked: 0

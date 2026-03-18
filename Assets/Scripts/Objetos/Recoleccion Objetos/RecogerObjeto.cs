@@ -157,4 +157,16 @@ public class RecogerObjeto : MonoBehaviour
         }
     }
 
+    // Esta función la llamará la puerta
+    public bool EntregarLlave()
+    {
+        if (llaveMano2 != null)
+        {
+            Destroy(llaveMano2); // La llave desaparece del inventario
+            llaveMano2 = null;    // La mano queda libre
+            return true;          // Confirmamos que sí había llave
+        }
+        return false; // No había llave
+    }
+
 }
