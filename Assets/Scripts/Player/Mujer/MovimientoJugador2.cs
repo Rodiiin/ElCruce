@@ -159,6 +159,28 @@ public class MovimientoJugador2 : MonoBehaviour
         StartCoroutine(ParpadeoRojo());
     }
 
+    public void Curar(int cantidad)
+    {
+        if (estaMuerto) return;
+
+        vidasActuales += cantidad;
+
+        if (vidasActuales > vidasMaximas)
+        {
+            vidasActuales = vidasMaximas;
+        }
+
+        Debug.Log("Jugador 2 recuperó vida. Vida actual: " + vidasActuales);
+        StartCoroutine(FeedbackCuracion());
+    }
+
+    private IEnumerator FeedbackCuracion()
+    {
+        spriteRenderer.color = Color.green;
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.color = Color.white;
+    }
+
     private void Morir()
     {
         estaMuerto = true;

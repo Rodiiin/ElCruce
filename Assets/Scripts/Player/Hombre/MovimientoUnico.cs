@@ -180,6 +180,33 @@ public class MovimientoUnico : MonoBehaviour
         StartCoroutine(ParpadeoRojo());
     }
 
+    // Función para recuperar vida
+    public void Curar(int cantidad)
+    {
+        if (estaMuerto) return;
+
+        vidasActuales += cantidad;
+
+        // Asegurarnos de no sobrepasar las vidas máximas
+        if (vidasActuales > vidasMaximas)
+        {
+            vidasActuales = vidasMaximas;
+        }
+
+        Debug.Log("Vida recuperada. Vida actual: " + vidasActuales);
+
+        StartCoroutine(FeedbackCuracion());
+    }
+
+    private IEnumerator FeedbackCuracion()
+    {
+        spriteRenderer.color = Color.green;
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.color = Color.white;
+    }
+
+
+
     private void Morir()
     {
         estaMuerto = true;
