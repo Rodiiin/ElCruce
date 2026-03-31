@@ -18,14 +18,14 @@ public class MovimientoUnico : MonoBehaviour
     public int saltosMaximos = 2;
     private int saltosRealizados;
 
-    [Header("Configuración Daño")]
-    public float fuerzaImpulso = 5f;
-    public float duracionParpadeo = 0.5f;
+    // [Header("Configuración Daño")]
+    // public float fuerzaImpulso = 5f;
+    // public float duracionParpadeo = 0.5f;
 
-    [Header("Configuración Vidas")]
-    public int vidasMaximas = 3;
-    private int vidasActuales;
-    private bool estaMuerto = false;
+    // [Header("Configuración Vidas")]
+    // public int vidasMaximas = 3;
+    // private int vidasActuales;
+    // private bool estaMuerto = false;
 
     [Header("Configuración Dash")]
     public float velocidadDash = 20f;
@@ -46,10 +46,9 @@ public class MovimientoUnico : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private VidaJugador vida; // NUEVA REFERENCIA
     private float mover;
-    private Vector2 velocidadSuavizada = Vector2.zero;
     private bool estaEnSuelo;
-    private bool recibiendoDaño = false;
 
     void Start()
     {
@@ -57,8 +56,8 @@ public class MovimientoUnico : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        vida = GetComponent<VidaJugador>();
 
-        vidasActuales = vidasMaximas;
 
         gravedadOriginal = rb.gravityScale; 
 
@@ -69,19 +68,19 @@ public class MovimientoUnico : MonoBehaviour
     void Update()
     {
 
-        // --- No permitir movimiento si está recibiendo daño
-        if (recibiendoDaño || estaMuerto || estaHaciendoDash || atacando) return;
+        // --- No permitir movimiento si está muerto
+        if (vida != null && vida.vidasActuales <= 0) return;
+
+        if (estaHaciendoDash || atacando) return;
 
         //Presionar leftShift para el dash
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashDisponible)
-        {
             StartCoroutine(RealizarDash());
-        }
+        
 
         if (Input.GetKeyDown(KeyCode.Space) && ataqueDisponible)
-        {
             StartCoroutine(RealizarAtaque());
-        }
+        
 
         // Detectar entrada
         mover = Input.GetAxis("Horizontal");
@@ -142,10 +141,12 @@ public class MovimientoUnico : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (vida != null && vida.recibiendoDaño) return;
+
         // Verificamos si tocamos el suelo
         estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
 
-        if (rb == null || recibiendoDaño || estaMuerto|| estaHaciendoDash) return;
+        if (rb == null || estaHaciendoDash) return;
 
         // Aplicamos el movimiento físico
         float velocidadX = mover * velocidad;
@@ -154,96 +155,7 @@ public class MovimientoUnico : MonoBehaviour
         rb.velocity = new Vector2(velocidadX, rb.velocity.y);        
     }
 
-    // --- Método para recibir daño 
-    public void RecibirDaño(Vector2 direccionGolpe)
-    {
-        if (recibiendoDaño || estaMuerto) return; // Evitar múltiples golpes seguidos
-
-        vidasActuales --;
-
-        if (vidasActuales <= 0)
-        {
-            Morir();
-            return; 
-        }
-
-        recibiendoDaño = true;
-        
-        // 1. Activar animación
-        if (animator != null) animator.SetTrigger("Hit");
-
-        // 2. Aplicar impulso físico
-        rb.velocity = Vector2.zero; // Detener movimiento actual
-        rb.AddForce(direccionGolpe.normalized * fuerzaImpulso, ForceMode2D.Impulse);
-
-        // 3. Iniciar parpadeo rojo
-        StartCoroutine(ParpadeoRojo());
-    }
-
-    // Función para recuperar vida
-    public void Curar(int cantidad)
-    {
-        if (estaMuerto) return;
-
-        vidasActuales += cantidad;
-
-        // Asegurarnos de no sobrepasar las vidas máximas
-        if (vidasActuales > vidasMaximas)
-        {
-            vidasActuales = vidasMaximas;
-        }
-
-        Debug.Log("Vida recuperada. Vida actual: " + vidasActuales);
-
-        StartCoroutine(FeedbackCuracion());
-    }
-
-    private IEnumerator FeedbackCuracion()
-    {
-        spriteRenderer.color = Color.green;
-        yield return new WaitForSeconds(0.2f);
-        spriteRenderer.color = Color.white;
-    }
-
-
-
-    private void Morir()
-    {
-        estaMuerto = true;
-        recibiendoDaño = false; // Ya no recibe daño, está muerto
-        
-        // Ajustar el collider dspues de la muerte
-        BoxCollider2D collider = GetComponent<BoxCollider2D>();
-        if (collider != null)
-        {
-            // Reducimos la altura a la mitad, por ejemplo
-            collider.size = new Vector2(collider.size.x, collider.size.y * 0.09f);
-            // Ajustamos el centro para que la parte inferior siga en el suelo
-            collider.offset = new Vector2(collider.offset.x, collider.offset.y - (collider.size.y * .9f));
-        }
-
-        
-
-        // Cambiar capa para colisionar solo con el suelo ---
-        gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
-
-        // Activar animación de muerte
-        if (animator != null) animator.SetTrigger("Death");
-
-        this.enabled = false;
-        
-        Debug.Log("El jugador ha muerto");
-        // Aquí podrías llamar a una pantalla de Game Over
-    }
-
-    private IEnumerator ParpadeoRojo()
-    {
-        spriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(duracionParpadeo);
-        spriteRenderer.color = Color.white;
-        recibiendoDaño = false; // Permitir movimiento de nuevo
-    }
-
+    
     private IEnumerator RealizarDash()
     {
         dashDisponible = false;

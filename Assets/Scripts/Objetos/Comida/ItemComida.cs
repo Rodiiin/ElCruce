@@ -11,35 +11,14 @@ public class ItemComida : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Ambos jugadores deben tener el Tag "Player" para que esto entre
         if (collision.CompareTag("Player"))
         {
-            // Intentamos obtener el script del Jugador 1
-            MovimientoUnico j1 = collision.GetComponent<MovimientoUnico>();
-            // Intentamos obtener el script del Jugador 2
-            MovimientoJugador2 j2 = collision.GetComponent<MovimientoJugador2>();
+            // Buscamos el componente genérico de vida
+            VidaJugador scriptVida = collision.GetComponent<VidaJugador>();
 
-            bool fueCurado = false;
-
-            if (j1 != null)
+            if (scriptVida != null)
             {
-                j1.Curar(puntosDeVida);
-                fueCurado = true;
-            }
-            else if (j2 != null)
-            {
-                j2.Curar(puntosDeVida);
-                fueCurado = true;
-            }
-
-            // Si alguno de los dos fue curado, procesamos la desaparición del item
-            if (fueCurado)
-            {
-                if (efectoParticulas != null)
-                {
-                    Instantiate(efectoParticulas, transform.position, Quaternion.identity);
-                }
-
+                scriptVida.Curar(puntosDeVida);
                 Destroy(gameObject);
             }
         }

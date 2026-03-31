@@ -1221,9 +1221,10 @@ GameObject:
   - component: {fileID: 1058442701}
   - component: {fileID: 1058442700}
   - component: {fileID: 1058442703}
+  - component: {fileID: 1058442704}
   m_Layer: 0
   m_Name: JugadorDos
-  m_TagString: Player
+  m_TagString: Player2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1419,6 +1420,22 @@ MonoBehaviour:
   cooldownDash: 1
   tiempoAtaque: 0.3
   cooldownAtaque: 0.2
+--- !u!114 &1058442704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058442697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd28fb83e9b6f3b41aa732b41441db79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidasMaximas: 3
+  vidasActuales: 0
+  duracionParpadeo: 0.5
+  fuerzaImpulso: 5
 --- !u!1 &1302029709
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,6 +1451,7 @@ GameObject:
   - component: {fileID: 1302029711}
   - component: {fileID: 1302029710}
   - component: {fileID: 1302029716}
+  - component: {fileID: 1302029717}
   m_Layer: 9
   m_Name: JugadorUnico
   m_TagString: Player
@@ -1463,9 +1481,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   saltosMaximos: 2
-  fuerzaImpulso: 8
-  duracionParpadeo: 0.5
-  vidasMaximas: 2
   velocidadDash: 20
   duracionDash: 0.2
   cooldownDash: 1
@@ -1652,6 +1667,22 @@ MonoBehaviour:
   fuerzaLanzamiento: 10
   anguloLanzamiento: {x: 1, y: 1}
   tiempoRespawn: 3
+--- !u!114 &1302029717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302029709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd28fb83e9b6f3b41aa732b41441db79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidasMaximas: 2
+  vidasActuales: 0
+  duracionParpadeo: 0.5
+  fuerzaImpulso: 5
 --- !u!1 &1534269513
 GameObject:
   m_ObjectHideFlags: 0
@@ -1939,7 +1970,7 @@ Transform:
   m_GameObject: {fileID: 1672619716}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.268, y: -3.774, z: 0}
+  m_LocalPosition: {x: 2.13, y: -3.774, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1957,7 +1988,7 @@ GameObject:
   - component: {fileID: 1699900862}
   - component: {fileID: 1699900861}
   - component: {fileID: 1699900864}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2060,7 +2091,7 @@ Transform:
   m_GameObject: {fileID: 1699900860}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1658, y: -0.39840004, z: 0}
+  m_LocalPosition: {x: -1.69, y: -2.78, z: 0}
   m_LocalScale: {x: 1.0116, y: 0.9768, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
