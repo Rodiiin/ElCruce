@@ -276,7 +276,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &3050341380607381089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,6 +292,7 @@ MonoBehaviour:
   tiempoEspera: 0.8
   velocidadTemblor: 0.1
   tiempoDestruccion: 2
+  tiempoRespawn: 2
 --- !u!1 &5405351811373277030
 GameObject:
   m_ObjectHideFlags: 0

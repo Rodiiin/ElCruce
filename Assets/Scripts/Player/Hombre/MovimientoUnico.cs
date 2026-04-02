@@ -12,20 +12,12 @@ public class MovimientoUnico : MonoBehaviour
     public float fuerzaSalto = 5f;
     public float fuerzaSegundoSalto = 0.001f;
     public Transform detectorSuelo; // Un objeto vacío en los pies del personaje
-    public float radioDeteccion = 0.9f;
+    public float radioDeteccion = 0.1f;
     public LayerMask capaSuelo; // Selecciona la capa del suelo en el inspector
     //Para el doble salto
     public int saltosMaximos = 2;
     private int saltosRealizados;
 
-    // [Header("Configuración Daño")]
-    // public float fuerzaImpulso = 5f;
-    // public float duracionParpadeo = 0.5f;
-
-    // [Header("Configuración Vidas")]
-    // public int vidasMaximas = 3;
-    // private int vidasActuales;
-    // private bool estaMuerto = false;
 
     [Header("Configuración Dash")]
     public float velocidadDash = 20f;
@@ -101,31 +93,37 @@ public class MovimientoUnico : MonoBehaviour
         if (estaEnSuelo)
         {
             saltosRealizados = 0;
+            animator.ResetTrigger("Jump");
         }
 
         if (Input.GetKeyDown(KeyCode.W) )
         {
             if (estaEnSuelo || saltosRealizados < saltosMaximos)
-        {
-            // Aplicar fuerza (reseteamos velocidad vertical antes para salto uniforme)
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
-            
-            if (saltosRealizados == 0)
+            {
+                // Aplicar fuerza (reseteamos velocidad vertical antes para salto uniforme)
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+                
+                if (saltosRealizados == 0)
+                    {
+                        // Primer salto
+                        rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+                    }
+                    else
+                    {
+                        // Segundo salto 
+                        rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
+                    }
+                
+                saltosRealizados++;
+                
+                // Trigger de animación (puedes usar el mismo trigger de salto)
+                if (animator != null) 
                 {
-                    // Primer salto
-                    rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+                    // FORZAMOS que deje de creer que está en el suelo por este frame
+                    animator.SetBool("isGrounded", false); 
+                    animator.SetTrigger("Jump");
                 }
-                else
-                {
-                    // Segundo salto 
-                    rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
-                }
-            
-            saltosRealizados++;
-            
-            // Trigger de animación (puedes usar el mismo trigger de salto)
-            if (animator != null) animator.SetTrigger("Jump");
-        }
+            }
         }
 
         // --- ACTUALIZAR PARÁMETROS DE ANIMACIÓN ---

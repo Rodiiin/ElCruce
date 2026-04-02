@@ -56,6 +56,9 @@ public class PlataformaQueCae : MonoBehaviour
         // --- FASE 2: Caída ---
         rb.bodyType = RigidbodyType2D.Dynamic;
 
+        //Congelamos el movimiento en X y la rotación para que caiga recto hacia abajo sin moverse horizontalmente ni girar
+        rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+
         // Esperamos un poco antes de "hacerla desaparecer"
         yield return new WaitForSeconds(1.5f); 
 
@@ -65,11 +68,17 @@ public class PlataformaQueCae : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.velocity = Vector2.zero;
 
+        //Al volver a Kinematic, reseteamos las constraints para que no interfieran con el Respawn
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.constraints = RigidbodyConstraints2D.None;
+        rb.velocity = Vector2.zero;
+
         // --- FASE 4: Respawn ---
         yield return new WaitForSeconds(tiempoRespawn);
         
         // Resetear todo a su estado inicial
         transform.position = posicionOriginal;
+        rb.constraints = RigidbodyConstraints2D.None;
         col.enabled = true;
         foreach (SpriteRenderer s in renderers) s.enabled = true;
         estaCayendo = false;
