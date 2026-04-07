@@ -3600,6 +3600,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radioDeteccion: 5
+  tamanoDeteccion: {x: 10, y: 9}
+  offsetDeteccion: {x: 0, y: 3}
   capaJugadores:
     serializedVersion: 2
     m_Bits: 512

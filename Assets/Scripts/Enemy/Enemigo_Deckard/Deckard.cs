@@ -6,6 +6,8 @@ public class Deckard : MonoBehaviour
 {
     [Header("Detección")]
     public float radioDeteccion = 5f;
+    public Vector2 tamanoDeteccion = new Vector2(10f, 5f); // Ancho y Alto
+    public Vector2 offsetDeteccion = new Vector2(0f, 2.5f);
     public LayerMask capaJugadores; // Selecciona "Player" en el Inspector
     
     private Transform jugadorObjetivo;
@@ -29,27 +31,17 @@ public class Deckard : MonoBehaviour
     {
         EncontrarJugadorMasCercano();
 
+        // Si encontramos a alguien dentro del RECTÁNGULO
         if (jugadorObjetivo != null)
         {
-            float distancia = Vector2.Distance(transform.position, jugadorObjetivo.position);
+            jugadorEnRango = true;
+            ActualizarMirada();
 
-            if (distancia <= radioDeteccion)
+            cronometroAtaque += Time.deltaTime;
+            if (cronometroAtaque >= tiempoEntreNavajas)
             {
-                jugadorEnRango = true;
-                ActualizarMirada();
-                if (jugadorEnRango)
-                {
-                    cronometroAtaque += Time.deltaTime;
-                    if (cronometroAtaque >= tiempoEntreNavajas)
-                    {
-                        LanzarNavaja();
-                        cronometroAtaque = 0;
-                    }
-                }
-            }
-            else
-            {
-                RegresarAFrente();
+                LanzarNavaja();
+                cronometroAtaque = 0;
             }
         }
         else
@@ -61,8 +53,8 @@ public class Deckard : MonoBehaviour
 
     void EncontrarJugadorMasCercano()
     {
-        // Buscamos a todos los posibles jugadores en el radio
-        Collider2D[] jugadoresEncontrados = Physics2D.OverlapCircleAll(transform.position, radioDeteccion, capaJugadores);
+        Vector2 centroReal = (Vector2)transform.position + offsetDeteccion;
+        Collider2D[] jugadoresEncontrados = Physics2D.OverlapBoxAll(centroReal, tamanoDeteccion, 0f, capaJugadores);        
         
         float distanciaCercana = Mathf.Infinity;
         Transform objetivoTemporal = null;
@@ -72,11 +64,14 @@ public class Deckard : MonoBehaviour
             // Verificamos que sea P1 o P2 por su Tag
             if (col.CompareTag("Player") || col.CompareTag("Player2"))
             {
-                float distancia = Vector2.Distance(transform.position, col.transform.position);
-                if (distancia < distanciaCercana)
+                if (col.transform.position.y > transform.position.y - 0.5f) 
                 {
-                    distanciaCercana = distancia;
-                    objetivoTemporal = col.transform;
+                    float distancia = Vector2.Distance(transform.position, col.transform.position);
+                    if (distancia < distanciaCercana)
+                    {
+                        distanciaCercana = distancia;
+                        objetivoTemporal = col.transform;
+                    }
                 }
             }
         }
@@ -170,6 +165,7 @@ public class Deckard : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, radioDeteccion);
+        Vector2 centroReal = (Vector2)transform.position + offsetDeteccion;
+        Gizmos.DrawWireCube(centroReal, tamanoDeteccion);
     }
 }
