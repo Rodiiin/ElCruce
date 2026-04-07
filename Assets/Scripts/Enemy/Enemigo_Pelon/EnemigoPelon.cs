@@ -92,17 +92,23 @@ public class EnemigoPelon : MonoBehaviour
         puedeAtacar = false;
         atacando = true; // Bloquea el movimiento de patrulla
         
+        // --- GIRAR HACIA EL JUGADOR ---
+        // Calculamos la dirección (1 o -1) restando posiciones X
+        float diferenciaX = jugador.transform.position.x - transform.position.x;
+        float direccionHaciaJugador = diferenciaX > 0 ? 1f : -1f;
+
+        // Actualizamos el Animator para que elija el Idle correcto (Left o Right)
+        animator.SetBool("isWalking", false);
+        animator.SetFloat("DirectionX", direccionHaciaJugador);
+        
+        // Opcional: Actualizamos la dirección de patrulla para que al terminar de 
+        // atacar, siga caminando hacia donde vio al jugador
+        moviendoADerecha = diferenciaX > 0;
+
+
         // --- EFECTO VISUAL DEL HUMO ---
         if (efectoHumo != null)
         {
-            // Orientamos el humo
-            SpriteRenderer humoSR = efectoHumo.GetComponent<SpriteRenderer>();
-            if (humoSR != null) humoSR.flipX = !moviendoADerecha;
-
-            // Movemos el humo un poco hacia adelante del enemigo para que no salga de su centro
-            float offsetHumo = moviendoADerecha ? 0.5f : -0.5f;
-            efectoHumo.transform.localPosition = new Vector3(offsetHumo, 0, 0);
-
             efectoHumo.SetActive(true);
             
             Animator humoAnim = efectoHumo.GetComponent<Animator>();
@@ -130,6 +136,8 @@ public class EnemigoPelon : MonoBehaviour
         yield return new WaitForSeconds(1f); // Tiempo que se queda parado "golpeando"
         
         if (efectoHumo != null) efectoHumo.SetActive(false);
+
+        yield return new WaitForSeconds(0.5f);
         
         atacando = false; // Permite volver a patrullar o esperar
         
@@ -142,8 +150,14 @@ public class EnemigoPelon : MonoBehaviour
         estaEsperando = true;
         animator.SetBool("isWalking", false);
 
+        animator.SetFloat("DirectionX", 0);
+
         yield return new WaitForSeconds(tiempoEsperaIdle);
+
         moviendoADerecha = nuevaDireccion;
+
+        animator.SetFloat("DirectionX", nuevaDireccion ? 1f : -1f);
+        
         estaEsperando = false;
     }
 

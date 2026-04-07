@@ -1792,7 +1792,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_77
+      name: Humo_centro_1
       rect:
         serializedVersion: 2
         x: 0
@@ -1813,7 +1813,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_78
+      name: Humo_centro_2
       rect:
         serializedVersion: 2
         x: 64
@@ -1834,7 +1834,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_79
+      name: Humo_centro_3
       rect:
         serializedVersion: 2
         x: 128
@@ -1855,7 +1855,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_80
+      name: Humo_centro_4
       rect:
         serializedVersion: 2
         x: 192
@@ -1876,7 +1876,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_81
+      name: Humo_centro_5
       rect:
         serializedVersion: 2
         x: 256
@@ -1897,7 +1897,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_82
+      name: Humo_centro_6
       rect:
         serializedVersion: 2
         x: 320
@@ -1918,7 +1918,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_83
+      name: Humo_centro_7
       rect:
         serializedVersion: 2
         x: 384
@@ -1939,7 +1939,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_84
+      name: Humo_centro_8
       rect:
         serializedVersion: 2
         x: 448
@@ -1960,7 +1960,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_85
+      name: Humo_centro_9
       rect:
         serializedVersion: 2
         x: 512
@@ -1981,7 +1981,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_86
+      name: Humo_centro_10
       rect:
         serializedVersion: 2
         x: 576
@@ -2002,11 +2002,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Free Smoke Fx  Pixel 06_87
+      name: Humo_centro_11
       rect:
         serializedVersion: 2
-        x: 640
-        y: 960
+        x: 641
+        y: 961
         width: 64
         height: 64
       alignment: 0
@@ -5715,18 +5715,7 @@ TextureImporter:
       Free Smoke Fx  Pixel 06_74: 298504884
       Free Smoke Fx  Pixel 06_75: -411874366
       Free Smoke Fx  Pixel 06_76: 295785207
-      Free Smoke Fx  Pixel 06_77: -436962136
-      Free Smoke Fx  Pixel 06_78: -1247112519
-      Free Smoke Fx  Pixel 06_79: -20708033
       Free Smoke Fx  Pixel 06_8: 706573938
-      Free Smoke Fx  Pixel 06_80: -1975431456
-      Free Smoke Fx  Pixel 06_81: 1525925902
-      Free Smoke Fx  Pixel 06_82: -728547216
-      Free Smoke Fx  Pixel 06_83: 460064954
-      Free Smoke Fx  Pixel 06_84: 1343529323
-      Free Smoke Fx  Pixel 06_85: -796330035
-      Free Smoke Fx  Pixel 06_86: -829268161
-      Free Smoke Fx  Pixel 06_87: 508441810
       Free Smoke Fx  Pixel 06_88: -1757083766
       Free Smoke Fx  Pixel 06_89: -1437020589
       Free Smoke Fx  Pixel 06_9: 1521082631
@@ -5740,6 +5729,17 @@ TextureImporter:
       Free Smoke Fx  Pixel 06_97: -276108027
       Free Smoke Fx  Pixel 06_98: 1600968204
       Free Smoke Fx  Pixel 06_99: 1097902963
+      Humo_centro_1: -436962136
+      Humo_centro_10: -829268161
+      Humo_centro_11: 508441810
+      Humo_centro_2: -1247112519
+      Humo_centro_3: -20708033
+      Humo_centro_4: -1975431456
+      Humo_centro_5: 1525925902
+      Humo_centro_6: -728547216
+      Humo_centro_7: 460064954
+      Humo_centro_8: 1343529323
+      Humo_centro_9: -796330035
       smoke_golpe_1: -755168036
       smoke_golpe_10: 1725981685
       smoke_golpe_11: 440873244
