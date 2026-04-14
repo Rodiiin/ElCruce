@@ -10,12 +10,12 @@ public class MovimientoUnico : MonoBehaviour
 
     [Header("Configuración Salto")]
     public float fuerzaSalto = 5f;
-    public float fuerzaSegundoSalto = 0.001f;
+    public float fuerzaSegundoSalto = 5f;
     public Transform detectorSuelo; // Un objeto vacío en los pies del personaje
     public float radioDeteccion = 0.1f;
     public LayerMask capaSuelo; // Selecciona la capa del suelo en el inspector
     //Para el doble salto
-    public int saltosMaximos = 2;
+    public int saltosMaximosEnElAire = 2;
     private int saltosRealizados;
 
 
@@ -98,7 +98,7 @@ public class MovimientoUnico : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W) )
         {
-            if (estaEnSuelo || saltosRealizados < saltosMaximos)
+            if (estaEnSuelo || saltosRealizados < saltosMaximosEnElAire)
             {
                 // Aplicar fuerza (reseteamos velocidad vertical antes para salto uniforme)
                 rb.velocity = new Vector2(rb.velocity.x, 0f);

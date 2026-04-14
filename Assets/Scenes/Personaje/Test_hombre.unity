@@ -2418,13 +2418,13 @@ MonoBehaviour:
   velocidad: 5
   suavizado: 0.05
   fuerzaSalto: 12
-  fuerzaSegundoSalto: 0.1
+  fuerzaSegundoSalto: 5
   detectorSuelo: {fileID: 65449835}
   radioDeteccion: 0.14
   capaSuelo:
     serializedVersion: 2
     m_Bits: 64
-  saltosMaximos: 2
+  saltosMaximosEnElAire: 1
   velocidadDash: 20
   duracionDash: 0.2
   cooldownDash: 1
