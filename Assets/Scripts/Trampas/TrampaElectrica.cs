@@ -81,15 +81,29 @@ public class TrampaElectrica : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        // Si la trampa está activa y toca al jugador
-        if (estaActiva && (collision.CompareTag("Player") || collision.CompareTag("Player2")))
+        // Si la trampa está activa
+        if (estaActiva)
         {
-            VidaJugador vida = collision.GetComponent<VidaJugador>();
-            if (vida != null)
+            // --- INTENTAR DAÑAR AL JUGADOR 1 ---
+            if (collision.CompareTag("Player"))
             {
-                // Dirección del empuje (desde el centro de la trampa hacia el jugador)
-                Vector2 direccion = collision.transform.position - transform.position;
-                vida.RecibirDaño(direccion);
+                VidaJugador vida1 = collision.GetComponent<VidaJugador>();
+                if (vida1 != null)
+                {
+                    Vector2 direccion = collision.transform.position - transform.position;
+                    vida1.RecibirDaño(direccion);
+                }
+            }
+
+            // --- INTENTAR DAÑAR AL JUGADOR 2 ---
+            if (collision.CompareTag("Player2"))
+            {
+                VidaJugador2 vida2 = collision.GetComponent<VidaJugador2>();
+                if (vida2 != null)
+                {
+                    Vector2 direccion = collision.transform.position - transform.position;
+                    vida2.RecibirDaño(direccion);
+                }
             }
         }
     }

@@ -159,11 +159,21 @@ public class Perro : MonoBehaviour
     {
         foreach (Collider2D col in toques)
         {
-            VidaJugador vida = col.GetComponent<VidaJugador>();
-            if (vida != null)
+            // 1. Intentamos obtener ambos componentes
+            VidaJugador vidaJ1 = col.GetComponent<VidaJugador>();
+            VidaJugador2 vidaJ2 = col.GetComponent<VidaJugador2>();
+
+            // 2. Calculamos la dirección del empuje
+            Vector2 direccionGolpe = col.transform.position - transform.position;
+
+            // 3. Aplicamos el daño a quien corresponda
+            if (vidaJ1 != null)
             {
-                Vector2 direccionGolpe = col.transform.position - transform.position;
-                vida.RecibirDaño(direccionGolpe);
+                vidaJ1.RecibirDaño(direccionGolpe);
+            }
+            else if (vidaJ2 != null)
+            {
+                vidaJ2.RecibirDaño(direccionGolpe);
             }
         }
     }

@@ -63,8 +63,9 @@ public class EnemigoPelon : MonoBehaviour
         if (jugadorDetectado != null && puedeAtacar)
         {
             // Solo atacamos si el jugador NO está muerto (opcional pero recomendado)
-            VidaJugador v = jugadorDetectado.GetComponent<VidaJugador>();
-            if (v != null && v.vidasActuales > 0)
+            VidaJugador v1 = jugadorDetectado.GetComponent<VidaJugador>();
+            VidaJugador2 v2 = jugadorDetectado.GetComponent<VidaJugador2>();
+            if ((v1 != null && v1.vidasActuales > 0) || (v2 != null && v2.vidasActuales > 0))
             {
                 StartCoroutine(SecuenciaAtaque(jugadorDetectado.gameObject));
             }
@@ -120,18 +121,22 @@ public class EnemigoPelon : MonoBehaviour
         }
 
         // --- DAÑO AL JUGADOR ---
-        VidaJugador vidaPlayer = jugador.GetComponent<VidaJugador>();
-        if (vidaPlayer != null)
-        {
-            // Calculamos la dirección del golpe para el Knockback
-            // (Posición Jugador - Posición Enemigo) nos da el vector hacia afuera
-            Vector2 direccionGolpe = jugador.transform.position - transform.position;
-            
-            // Si el jugador está muy encima, forzamos un poco de elevación (0.5f en Y)
-            direccionGolpe.y += 0.5f; 
+        // Intentamos obtener el script del Jugador 1 O del Jugador 2
+        VidaJugador vidaJ1 = jugador.GetComponent<VidaJugador>();
+        VidaJugador2 vidaJ2 = jugador.GetComponent<VidaJugador2>();
 
-            vidaPlayer.RecibirDaño(direccionGolpe);
-        }
+        // Calculamos la dirección del golpe para el Knockback (esto sirve para ambos)
+        Vector2 direccionGolpe = jugador.transform.position - transform.position;
+        direccionGolpe.y += 0.5f;
+
+        // Si es el Jugador 1, le mandamos el daño a su script
+        if (vidaJ1 != null)
+            vidaJ1.RecibirDaño(direccionGolpe);
+        
+        // Si no es el 1, pero sí tiene el script del Jugador 2, se lo mandamos a él
+        else if (vidaJ2 != null)
+            vidaJ2.RecibirDaño(direccionGolpe);
+        
 
         yield return new WaitForSeconds(1f); // Tiempo que se queda parado "golpeando"
         
