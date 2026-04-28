@@ -61,7 +61,17 @@ public class MovimientoUnico : MonoBehaviour
     {
 
         // --- No permitir movimiento si está muerto
-        if (vida != null && vida.vidasActuales <= 0) return;
+        if (vida != null && vida.vidasActuales <= 0) 
+        {
+            // Solo disparamos el Trigger si NO estamos ya en la animación de muerte
+            if (animator != null && !animator.GetCurrentAnimatorStateInfo(0).IsName("Death")) 
+            {
+                animator.SetTrigger("Death");
+                rb.velocity = Vector2.zero; // Frenazo total
+                rb.simulated = false;       // Opcional: Para que los enemigos ya no lo detecten
+            }
+            return; // Bloquea el resto del script
+        }
 
         if (estaHaciendoDash || atacando) return;
 

@@ -10,110 +10,87 @@ public class MovimientoJugador2 : MonoBehaviour
 
     [Header("Configuración Salto")]
     public float fuerzaSalto = 5f;
-    public float fuerzaSegundoSalto = 0.001f;
+    public float fuerzaSegundoSalto = 5f;
     public Transform detectorSuelo;
-    public float radioDeteccion = 0.9f;
+    public float radioDeteccion = 0.1f;
     public LayerMask capaSuelo;
     public int saltosMaximos = 2;
     private int saltosRealizados;
 
-    [Header("Configuración Daño")]
-    public float fuerzaImpulso = 5f;
-    public float duracionParpadeo = 0.5f;
-
-    [Header("Configuración Vidas")]
-    public int vidasMaximas = 3;
-    private int vidasActuales;
-    private bool estaMuerto = false;
-
-    [Header("Configuración Dash")]
+    [Header("Configuración Dash/Ataque")]
     public float velocidadDash = 20f;
     public float duracionDash = 0.2f;
     public float cooldownDash = 1f;
-    private bool estaHaciendoDash = false;
-    private bool dashDisponible = true;
-    private float gravedadOriginal;
-
-    [Header("Configuración Ataque")]
     public float tiempoAtaque = 0.3f;
     public float cooldownAtaque = 0.2f;
-    private bool atacando = false;
-    private bool ataqueDisponible = true;
 
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private VidaJugador2 vida; 
+    
     private float mover;
     private Vector2 velocidadSuavizada = Vector2.zero;
     private bool estaEnSuelo;
-    private bool recibiendoDaño = false;
+    private bool estaHaciendoDash = false;
+    private bool dashDisponible = true;
+    private bool atacando = false;
+    private bool ataqueDisponible = true;
+    private float gravedadOriginal;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        vidasActuales = vidasMaximas;
+        vida = GetComponent<VidaJugador2>();
         gravedadOriginal = rb.gravityScale;
     }
 
     void Update()
     {
-        if (recibiendoDaño || estaMuerto || estaHaciendoDash || atacando) return;
+        if (vida != null && (vida.estaMuerto || vida.recibiendoDaño)) 
+        {
+            mover = 0; // Reseteamos mover para que no se deslice
+            return;
+        }
 
-        // ---- TECLA DASH: U ----
+        if (estaHaciendoDash || atacando) return;
+
+        // ---- TECLA DASH: H ----
         if (Input.GetKeyDown(KeyCode.H) && dashDisponible)
-        {
-            StartCoroutine(RealizarDash());
-        }
-
-        // ---- TECLA ATAQUE: K ----
+             StartCoroutine(RealizarDash());
+        
+        // ---- TECLA ATAQUE: N ----
         if (Input.GetKeyDown(KeyCode.N) && ataqueDisponible)
-        {
             StartCoroutine(RealizarAtaque());
-        }
+        
 
-        // ---- MOVIMIENTO: J (izquierda) y L (derecha) ----
+        // ---- MOVIMIENTO: B (izquierda) y M (derecha) ----
         mover = 0f;
         if (Input.GetKey(KeyCode.M)) mover = 1f;
         if (Input.GetKey(KeyCode.B)) mover = -1f;
 
         // --- Lógica de giro
-        if (mover > 0)
-        {
-            if (spriteRenderer != null) spriteRenderer.flipX = true;
-        }
-        else if (mover < 0)
-        {
-            if (spriteRenderer != null) spriteRenderer.flipX = false;
-        }
+        if (mover > 0) spriteRenderer.flipX = true;
+        else if (mover < 0) spriteRenderer.flipX = false;
 
-        if (estaEnSuelo)
-        {
+
+        if (estaEnSuelo && rb.velocity.y <= 0.1f)
             saltosRealizados = 0;
-        }
+        
 
-        // ---- TECLA SALTO: I ----
+        // ---- TECLA SALTO: J ----
         if (Input.GetKeyDown(KeyCode.J))
         {
             if (estaEnSuelo || saltosRealizados < saltosMaximos)
             {
                 rb.velocity = new Vector2(rb.velocity.x, 0f);
 
-                if (saltosRealizados == 0 && estaEnSuelo)
-                {
-                    rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
-                    saltosRealizados++;
-                }
-                else if(saltosRealizados < saltosMaximos   )
-                {
-                    rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
-                    saltosRealizados++;
-                }
-
-                
-
+                // Aplicamos fuerza según el número de salto
+                float fuerzaAAplicar = (saltosRealizados == 0) ? fuerzaSalto : fuerzaSegundoSalto;
+                rb.AddForce(Vector2.up * fuerzaAAplicar, ForceMode2D.Impulse);
+                saltosRealizados++;
                 if (animator != null) animator.SetTrigger("Jump");
             }
         }
@@ -129,85 +106,16 @@ public class MovimientoJugador2 : MonoBehaviour
 
     void FixedUpdate()
     {
-        estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
 
-        if (rb == null || recibiendoDaño || estaMuerto || estaHaciendoDash) return;
+        estaEnSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
+        
+        if (estaHaciendoDash) return;
 
         Vector2 velocidadObjetivo = new Vector2(mover * velocidad, rb.velocity.y);
-        rb.velocity = Vector2.SmoothDamp(rb.velocity, velocidadObjetivo, ref velocidadSuavizada, suavizado);
-    }
+        //rb.velocity = Vector2.SmoothDamp(rb.velocity, velocidadObjetivo, ref velocidadSuavizada, suavizado);
+        float nuevaVelX = Mathf.Lerp(rb.velocity.x, mover * velocidad, suavizado);
+        rb.velocity = new Vector2(nuevaVelX, rb.velocity.y);
 
-    public void RecibirDaño(Vector2 direccionGolpe)
-    {
-        if (recibiendoDaño || estaMuerto) return;
-
-        vidasActuales--;
-
-        if (vidasActuales <= 0)
-        {
-            Morir();
-            return;
-        }
-
-        recibiendoDaño = true;
-
-        if (animator != null) animator.SetTrigger("Hit");
-
-        rb.velocity = Vector2.zero;
-        rb.AddForce(direccionGolpe.normalized * fuerzaImpulso, ForceMode2D.Impulse);
-
-        StartCoroutine(ParpadeoRojo());
-    }
-
-    public void Curar(int cantidad)
-    {
-        if (estaMuerto) return;
-
-        vidasActuales += cantidad;
-
-        if (vidasActuales > vidasMaximas)
-        {
-            vidasActuales = vidasMaximas;
-        }
-
-        Debug.Log("Jugador 2 recuperó vida. Vida actual: " + vidasActuales);
-        StartCoroutine(FeedbackCuracion());
-    }
-
-    private IEnumerator FeedbackCuracion()
-    {
-        spriteRenderer.color = Color.green;
-        yield return new WaitForSeconds(0.2f);
-        spriteRenderer.color = Color.white;
-    }
-
-    private void Morir()
-    {
-        estaMuerto = true;
-        recibiendoDaño = false;
-
-        BoxCollider2D collider = GetComponent<BoxCollider2D>();
-        if (collider != null)
-        {
-            collider.size = new Vector2(collider.size.x, collider.size.y * 0.09f);
-            collider.offset = new Vector2(collider.offset.x, collider.offset.y - (collider.size.y * .9f));
-        }
-
-        gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
-
-        if (animator != null) animator.SetTrigger("Death");
-
-        this.enabled = false;
-
-        Debug.Log("El jugador 2 ha muerto");
-    }
-
-    private IEnumerator ParpadeoRojo()
-    {
-        spriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(duracionParpadeo);
-        spriteRenderer.color = Color.white;
-        recibiendoDaño = false;
     }
 
     private IEnumerator RealizarDash()

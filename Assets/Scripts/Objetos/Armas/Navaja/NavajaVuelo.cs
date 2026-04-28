@@ -32,20 +32,30 @@ public class NavajaVuelo : MonoBehaviour
     {
         if (collision.CompareTag("Player") || collision.CompareTag("Player2"))
         {
-            // 1. Buscamos el script de vida en el jugador que tocamos
-            VidaJugador vida = collision.GetComponent<VidaJugador>();
+            // 1. Intentamos obtener ambos scripts
+            VidaJugador vidaJ1 = collision.GetComponent<VidaJugador>();
+            VidaJugador2 vidaJ2 = collision.GetComponent<VidaJugador2>();
 
-            if (vida != null)
+            // 2. Calculamos la dirección del golpe (desde el origen del ataque hacia el jugador)
+            Vector2 direccionGolpe = (Vector2)collision.transform.position - origenAtaque;
+            
+            // 3. Aplicamos el daño según quién sea el impactado
+            if (vidaJ1 != null)
             {
-                // 2. Calculamos la dirección del golpe (desde la navaja hacia el jugador)
-                // Usamos transform.right porque la navaja vuela hacia su "derecha" local
-                Vector2 direccionGolpe = (Vector2)collision.transform.position - origenAtaque;
-                
-                // 3. Aplicamos el daño
-                vida.RecibirDaño(direccionGolpe);
+                vidaJ1.RecibirDaño(direccionGolpe);
+                Destroy(gameObject); // Desaparece al impactar al J1
             }
-
-            Destroy(gameObject); // Desaparece al impactar
+            else if (vidaJ2 != null)
+            {
+                vidaJ2.RecibirDaño(direccionGolpe);
+                Destroy(gameObject); // Desaparece al impactar al J2
+            }
+        }
+        
+        // Opcional: Si quieres que la navaja se destruya al chocar con paredes (Suelo)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Suelo")) 
+        {
+            Destroy(gameObject);
         }
     }
 }

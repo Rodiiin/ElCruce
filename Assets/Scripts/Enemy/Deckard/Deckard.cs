@@ -120,18 +120,25 @@ public class Deckard : MonoBehaviour
         // Si lo que toca a Deckard es un Jugador...
         if (collision.CompareTag("Player") || collision.CompareTag("Player2"))
         {
-            VidaJugador vida = collision.GetComponent<VidaJugador>();
-            if (vida != null)
-            {
-                // Calculamos dirección del golpe (Desde Deckard hacia el Player)
-                Vector2 direccionGolpe = collision.transform.position - transform.position;
-                
-                // Aplicamos daño y empujón
-                vida.RecibirDaño(direccionGolpe);
+            // Intentamos obtener cualquiera de los dos scripts de vida
+            VidaJugador vidaJ1 = collision.GetComponent<VidaJugador>();
+            VidaJugador2 vidaJ2 = collision.GetComponent<VidaJugador2>();
 
-                // ACTIVAR EL HUMO (Si lo tienes configurado)
+            
+            // Calculamos dirección del golpe (Desde Deckard hacia el Player)
+            Vector2 direccionGolpe = collision.transform.position - transform.position;
+            
+            if (vidaJ1 != null)
+            {
+                vidaJ1.RecibirDaño(direccionGolpe);
                 ActivarEfectoHumo();
             }
+            else if (vidaJ2 != null)
+            {
+                vidaJ2.RecibirDaño(direccionGolpe);
+                ActivarEfectoHumo();
+            }
+            
         }
     }
 
