@@ -49,6 +49,12 @@ TagManager:
   - name: Fondo
     uniqueID: 797127339
     locked: 0
+  - name: BackgroundBuildings
+    uniqueID: 886108203
+    locked: 0
+  - name: BorderBarrier
+    uniqueID: 2600441795
+    locked: 0
   - name: Obstaculos
     uniqueID: 474464539
     locked: 0
