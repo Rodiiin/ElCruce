@@ -58,14 +58,14 @@ TagManager:
   - name: Platforms
     uniqueID: 2960488157
     locked: 0
-  - name: Obstaculos
-    uniqueID: 474464539
-    locked: 0
   - name: Player
     uniqueID: 142350699
     locked: 0
   - name: Enemies
     uniqueID: 1220989257
+    locked: 0
+  - name: Obstaculos
+    uniqueID: 474464539
     locked: 0
   - name: Objetos Equipables
     uniqueID: 213578111

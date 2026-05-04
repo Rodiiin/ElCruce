@@ -10,6 +10,13 @@ public class Deckard : MonoBehaviour
     public Vector2 offsetDeteccion = new Vector2(0f, 2.5f);
     public LayerMask capaJugadores; // Selecciona "Player" en el Inspector
     
+   
+    [Header("Floor detection")]
+    public Transform detectorSuelo; 
+    private float gravedadOriginal;
+    private Rigidbody2D rb;
+    
+    
     private Transform jugadorObjetivo;
     private Animator animator;
     private bool jugadorEnRango = false;
@@ -25,6 +32,8 @@ public class Deckard : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        gravedadOriginal = rb.gravityScale; 
+
     }
 
     void Update()
@@ -174,5 +183,12 @@ public class Deckard : MonoBehaviour
         Gizmos.color = Color.red;
         Vector2 centroReal = (Vector2)transform.position + offsetDeteccion;
         Gizmos.DrawWireCube(centroReal, tamanoDeteccion);
+
+        if (detectorSuelo != null)
+        {
+            // Dibujamos una esfera roja en la posición del detector para ver el rango
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(detectorSuelo.position, radioDeteccion);
+        }
     }
 }
