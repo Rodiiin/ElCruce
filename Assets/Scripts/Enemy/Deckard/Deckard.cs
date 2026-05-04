@@ -13,6 +13,8 @@ public class Deckard : MonoBehaviour
    
     [Header("Floor detection")]
     public Transform detectorSuelo; 
+    public float radioDeteccionSuelo = 0.1f;
+    public LayerMask capaSuelo; 
     private float gravedadOriginal;
     private Rigidbody2D rb;
     
@@ -32,12 +34,18 @@ public class Deckard : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        gravedadOriginal = rb.gravityScale; 
+        
+        rb = GetComponent<Rigidbody2D>(); 
+        if (rb != null)
+        {
+            gravedadOriginal = rb.gravityScale;
+        }
 
     }
 
     void Update()
     {
+        RevisarSuelo();
         EncontrarJugadorMasCercano();
 
         // Si encontramos a alguien dentro del RECTÁNGULO
@@ -86,6 +94,25 @@ public class Deckard : MonoBehaviour
         }
         jugadorObjetivo = objetivoTemporal;
     }
+
+    void RevisarSuelo()
+    {
+        if (detectorSuelo == null || rb == null) return;
+
+        // Use the 'capaSuelo' variable instead of a hardcoded string
+        bool tocandoSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccionSuelo, capaSuelo);
+
+        if (tocandoSuelo)
+        {
+            // To stop him from sliding or "jittering" on the floor
+            // you can set his Y velocity to 0 when grounded
+            if(rb.velocity.y < 0) 
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+            }
+        }
+    }
+
     void ActualizarMirada()
     {
         animator.SetBool("PlayerEnRango", true);
