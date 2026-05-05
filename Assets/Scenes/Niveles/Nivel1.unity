@@ -363,7 +363,7 @@ GameObject:
   - component: {fileID: 51459850}
   - component: {fileID: 51459849}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Corazon1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -438,6 +438,7 @@ GameObject:
   - component: {fileID: 105416218}
   - component: {fileID: 105416217}
   - component: {fileID: 105416216}
+  - component: {fileID: 105416220}
   m_Layer: 5
   m_Name: Canvas_HUD
   m_TagString: Untagged
@@ -529,6 +530,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &105416220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105416215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9252972654e9a844bffd237f60088fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  "corazonesNi\xF1o":
+  - {fileID: 675884829}
+  - {fileID: 585796936}
+  - {fileID: 1462086638}
+  "corazonesNi\xF1a":
+  - {fileID: 51459847}
+  - {fileID: 872949316}
+  - {fileID: 812341115}
 --- !u!1 &114604256
 GameObject:
   m_ObjectHideFlags: 0
@@ -2417,7 +2438,7 @@ GameObject:
   - component: {fileID: 585796939}
   - component: {fileID: 585796938}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: Corazon2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2870,7 +2891,7 @@ GameObject:
   - component: {fileID: 675884832}
   - component: {fileID: 675884831}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Corazon1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89346,7 +89367,7 @@ GameObject:
   - component: {fileID: 812341118}
   - component: {fileID: 812341117}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Corazon3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89421,7 +89442,7 @@ GameObject:
   - component: {fileID: 872949319}
   - component: {fileID: 872949318}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: Corazon2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92513,7 +92534,7 @@ GameObject:
   - component: {fileID: 1462086641}
   - component: {fileID: 1462086640}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Corazon3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
