@@ -85,7 +85,9 @@ public class MovimientoUnico : MonoBehaviour
         
 
         // Detectar entrada
-        mover = Input.GetAxis("Horizontal");
+        mover = 0f;
+        if (Input.GetKey(KeyCode.D)) mover = 1f;
+        if (Input.GetKey(KeyCode.A)) mover = -1f;
 
         // --- Lógica de giro
         if (mover > 0) {
