@@ -31,6 +31,8 @@ public class VidaJugador : MonoBehaviour
         if (recibiendoDaño || estaMuerto) return;
 
         vidasActuales--;
+        FindObjectOfType<ControladorVidaUI>().ActualizarCorazones(vidasActuales, true);
+        
         if (vidasActuales <= 0)
         {
             Morir();
