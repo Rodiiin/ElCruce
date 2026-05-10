@@ -11,7 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UI/MainMenu.unity
     guid: f3c44f697e3c19946966044cd37fc7e3
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Personaje/Test_hombre.unity
     guid: 03e714ff4310d7e4f8f037888c1388bb
+  - enabled: 1
+    path: Assets/Scenes/Niveles/Nivel1.unity
+    guid: 11440c054bc534ba08eb893ec0fe0447
   m_configObjects: {}

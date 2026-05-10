@@ -909,6 +909,48 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: "Cabeza_ni\xF1o"
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 250
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 1, y: 0, z: 1, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3794b50363f6b2a4aab6eddf020f51fc
+      internalID: 765998523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Cabeza_ni\xF1o_muerto"
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 66
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79f8f2bd05209614499c31b0557aef2c
+      internalID: -150360582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -955,6 +997,8 @@ TextureImporter:
       Boy_walk_6: -1614960728
       Boy_walk_7: 1891579420
       Boy_walk_8: -1285096691
+      "Cabeza_ni\xF1o": 765998523
+      "Cabeza_ni\xF1o_muerto": -150360582
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
