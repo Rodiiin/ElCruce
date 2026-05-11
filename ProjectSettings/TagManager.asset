@@ -23,7 +23,7 @@ TagManager:
   - Enemigo
   - postprocesing
   - Plataforma
-  - 
+  - Coleccionable
   - 
   - 
   - 
@@ -57,6 +57,9 @@ TagManager:
     locked: 0
   - name: Platforms
     uniqueID: 2960488157
+    locked: 0
+  - name: Coleccionables
+    uniqueID: 2762393847
     locked: 0
   - name: NPC
     uniqueID: 427301381
