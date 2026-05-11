@@ -50,7 +50,12 @@ public class VidaJugador2 : MonoBehaviour
     public void Curar(int cantidad)
     {
         if (estaMuerto) return;
+
         vidasActuales = Mathf.Min(vidasActuales + cantidad, vidasMaximas);
+        
+        // ESTA ES LA LÍNEA QUE FALTA:
+        FindObjectOfType<ControladorVidaUI>().ActualizarCorazones(vidasActuales, false);
+        
         StartCoroutine(Parpadeo(Color.green));
     }
 
