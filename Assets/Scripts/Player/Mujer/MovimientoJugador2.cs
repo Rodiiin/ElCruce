@@ -74,24 +74,38 @@ public class MovimientoJugador2 : MonoBehaviour
         // --- Lógica de giro
         if (mover > 0) spriteRenderer.flipX = true;
         else if (mover < 0) spriteRenderer.flipX = false;
-
-
-        if (estaEnSuelo && rb.velocity.y <= 0.1f)
-            saltosRealizados = 0;
         
+        if (estaEnSuelo)
+        {
+            saltosRealizados = 0;
+            if (animator != null) animator.ResetTrigger("Jump"); // Si usas reset
+        }
 
         // ---- TECLA SALTO: J ----
         if (Input.GetKeyDown(KeyCode.J))
         {
             if (estaEnSuelo || saltosRealizados < saltosMaximos)
-            {
+            {   
+
                 rb.velocity = new Vector2(rb.velocity.x, 0f);
 
-                // Aplicamos fuerza según el número de salto
-                float fuerzaAAplicar = (saltosRealizados == 0) ? fuerzaSalto : fuerzaSegundoSalto;
-                rb.AddForce(Vector2.up * fuerzaAAplicar, ForceMode2D.Impulse);
+                if (saltosRealizados == 0)
+                {
+                    // Primer salto
+                    rb.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    // Segundo salto 
+                    rb.AddForce(Vector2.up * fuerzaSegundoSalto, ForceMode2D.Impulse);
+                }
+                
                 saltosRealizados++;
-                if (animator != null) animator.SetTrigger("Jump");
+                if (animator != null) 
+                {
+                    animator.SetBool("isGrounded", false); 
+                    animator.SetTrigger("Jump");
+                }
             }
         }
 
