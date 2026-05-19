@@ -58,18 +58,18 @@ public class MovimientoJugador2 : MonoBehaviour
         if (estaHaciendoDash || atacando) return;
 
         // ---- TECLA DASH: H ----
-        if (Input.GetKeyDown(KeyCode.H) && dashDisponible)
+        if (Input.GetKeyDown(KeyCode.RightShift) && dashDisponible)
              StartCoroutine(RealizarDash());
         
         // ---- TECLA ATAQUE: N ----
-        if (Input.GetKeyDown(KeyCode.N) && ataqueDisponible)
+        if (Input.GetKeyDown(KeyCode.RightControl) && ataqueDisponible)
             StartCoroutine(RealizarAtaque());
         
 
         // ---- MOVIMIENTO: B (izquierda) y M (derecha) ----
         mover = 0f;
-        if (Input.GetKey(KeyCode.M)) mover = 1f;
-        if (Input.GetKey(KeyCode.B)) mover = -1f;
+        if (Input.GetKey(KeyCode.RightArrow)) mover = 1f;
+        if (Input.GetKey(KeyCode.LeftArrow)) mover = -1f;
 
         // --- Lógica de giro
         if (mover > 0) spriteRenderer.flipX = true;
@@ -82,7 +82,7 @@ public class MovimientoJugador2 : MonoBehaviour
         }
 
         // ---- TECLA SALTO: J ----
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (estaEnSuelo || saltosRealizados < saltosMaximos)
             {   
