@@ -1774,22 +1774,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2415154913181644516, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: capaSuelo.m_Bits
-      value: 4160
-      objectReference: {fileID: 0}
-    - target: {fileID: 2880822445119272953, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 5.803075
-      objectReference: {fileID: 0}
-    - target: {fileID: 2880822445119272953, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 5.47699
-      objectReference: {fileID: 0}
-    - target: {fileID: 2880822445119272953, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.1782749
-      objectReference: {fileID: 0}
     - target: {fileID: 2880822445119272953, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.09
@@ -1830,17 +1814,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3878452199012392773, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6819284680394253435, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
       propertyPath: m_Name
       value: JugadorDos
-      objectReference: {fileID: 0}
-    - target: {fileID: 6819284680394253435, guid: e0a6635ad12f36743a348272c58757ac, type: 3}
-      propertyPath: m_TagString
-      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3192,18 +3168,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 264358663124430875, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.6653458
-      objectReference: {fileID: 0}
-    - target: {fileID: 264358663124430875, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.6653458
-      objectReference: {fileID: 0}
-    - target: {fileID: 264358663124430875, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.6653458
-      objectReference: {fileID: 0}
-    - target: {fileID: 264358663124430875, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.51
       objectReference: {fileID: 0}
@@ -3243,37 +3207,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 537533707581543114, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 922143669578316034, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1339526108421508423, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3611093969140998117, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: capaSuelo.m_Bits
-      value: 4160
-      objectReference: {fileID: 0}
-    - target: {fileID: 3777626141111869437, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.06
-      objectReference: {fileID: 0}
-    - target: {fileID: 3777626141111869437, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.91
-      objectReference: {fileID: 0}
     - target: {fileID: 5231712821692675781, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
       propertyPath: m_Name
       value: JugadorUnico
-      objectReference: {fileID: 0}
-    - target: {fileID: 7300704523781795885, guid: b2c60b62f6509df49a33207c5bab8c81, type: 3}
-      propertyPath: vidasMaximas
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
