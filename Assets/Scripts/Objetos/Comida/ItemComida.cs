@@ -11,14 +11,16 @@ public class ItemComida : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") || collision.CompareTag("Player2"))
         {
             // Buscamos el componente genérico de vida
             VidaJugador scriptVida = collision.GetComponent<VidaJugador>();
+            VidaJugador2 scriptVida2 = collision.GetComponent<VidaJugador2>();
 
             if (scriptVida != null)
             {
                 scriptVida.Curar(puntosDeVida);
+                scriptVida2.Curar(puntosDeVida);
                 Destroy(gameObject);
             }
         }

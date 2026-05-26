@@ -7,7 +7,7 @@ public class VidaJugador : MonoBehaviour
     [Header("Configuración Vidas")]
     public int vidasMaximas = 3;
     public int vidasActuales;
-    private bool estaMuerto = false;
+    public bool estaMuerto = false;
     public bool recibiendoDaño = false;
 
     [Header("Efectos Visuales")]

@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Niveles/Nivel0.unity
     guid: f1ed137d872529141bfc76ef8aa77cc7
+  - enabled: 1
+    path: Assets/Scenes/Niveles/InteriorCasa1.unity
+    guid: f152a214e1570dc468d7162cc4a1d9d5
   m_configObjects: {}

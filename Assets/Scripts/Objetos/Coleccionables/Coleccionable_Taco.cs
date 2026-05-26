@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coleccionable_Rosario : MonoBehaviour
+public class Coleccionable_Taco : MonoBehaviour
 {
     [Header("Configuracion UI")]
     public GameObject panelLogro; // Arrastra aqui el Panel_Logro
