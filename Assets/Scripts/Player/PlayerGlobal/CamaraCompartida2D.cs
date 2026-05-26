@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CamaraCompartida2D : MonoBehaviour
@@ -13,7 +11,11 @@ public class CamaraCompartida2D : MonoBehaviour
     public Vector3 offset = new Vector3(0, 0, -10);
     
     [Header("Distancia Cooperativa")]
-    public float distanciaMaxima = 12f; // Ajusta este número según el tamaño (Size) de tu cámara
+    public float distanciaMaxima = 12f; 
+
+    [Header("Modo Interior (Fijo)")]
+    public bool esFija = false;
+    public Vector3 posicionFijaInterior;
 
     private VidaJugador scriptVidaNino;
     private VidaJugador2 scriptVidaNina;
@@ -28,42 +30,54 @@ public class CamaraCompartida2D : MonoBehaviour
     {
         if (nino == null || nina == null) return;
 
+        // Revisamos si los niños están vivos
         bool ninoVivo = (scriptVidaNino != null && !scriptVidaNino.estaMuerto);
         bool ninaViva = (scriptVidaNina != null && !scriptVidaNina.estaMuerto);
 
         Vector3 targetPosition = transform.position;
 
-        // CASO 1: Ambos vivos (Aquí viene la magia del freno)
-        if (ninoVivo && ninaViva)
+        // ==========================================
+        // CASO INTERIOR: La pantalla se queda congelada
+        // ==========================================
+        if (esFija)
         {
-            // Calculamos la distancia real entre los dos niños en el eje X
-            float distanciaActual = Mathf.Abs(nino.transform.position.x - nina.transform.position.x);
-
-            // Si se están alejando más de la cuenta, la cámara NO avanza más, obligándolos a juntarse
-            if (distanciaActual > distanciaMaxima)
+            // La cámara ignora a los niños y apunta directo al centro de la casa
+            targetPosition = posicionFijaInterior + offset;
+        }
+        // ==========================================
+        // CASOS EXTERIORES: Seguimiento normal
+        // ==========================================
+        else
+        {
+            // Ambos niños vivos
+            if (ninoVivo && ninaViva)
             {
-                // Mantenemos la posición actual de la cámara en X, solo suavizamos el eje Y por si saltan
-                targetPosition = new Vector3(transform.position.x, ((nino.transform.position.y + nina.transform.position.y) / 2f) + offset.y, offset.z);
+                float distanciaActual = Mathf.Abs(nino.transform.position.x - nina.transform.position.x);
+
+                // Si se alejan demasiado, la cámara se planta y no avanza en X
+                if (distanciaActual > distanciaMaxima)
+                {
+                    targetPosition = new Vector3(transform.position.x, ((nino.transform.position.y + nina.transform.position.y) / 2f) + offset.y, offset.z);
+                }
+                else
+                {
+                    Vector3 puntoMedio = (nino.transform.position + nina.transform.position) / 2f;
+                    targetPosition = puntoMedio + offset;
+                }
             }
-            else
+            // Solo la niña está viva
+            else if (!ninoVivo && ninaViva)
             {
-                // Si están a buena distancia, los seguimos en el punto medio normal
-                Vector3 puntoMedio = (nino.transform.position + nina.transform.position) / 2f;
-                targetPosition = puntoMedio + offset;
+                targetPosition = nina.transform.position + offset;
             }
-        }
-        // CASO 2: El niño murió -> Sigue a la niña libremente
-        else if (!ninoVivo && ninaViva)
-        {
-            targetPosition = nina.transform.position + offset;
-        }
-        // CASO 3: La niña murió -> Sigue al niño libremente
-        else if (ninoVivo && !ninaViva)
-        {
-            targetPosition = nino.transform.position + offset;
+            // Solo el niño está vivo
+            else if (ninoVivo && !ninaViva)
+            {
+                targetPosition = nino.transform.position + offset;
+            }
         }
 
-        // Movimiento fluido
+        // Movimiento fluido de la cámara hacia su destino
         transform.position = Vector3.Lerp(transform.position, targetPosition, suavizado);
     }
 }

@@ -17,6 +17,11 @@ public class Coleccionable_Rosario : MonoBehaviour
             recolectado = true;
             MostrarLogro();
         }
+        if (collision.CompareTag("Player2") && !recolectado)
+        {
+            recolectado = true;
+            MostrarLogro();
+        }
     }
 
     void MostrarLogro()

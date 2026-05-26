@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 83b9ca56f66ee0b4d8fdf7fde30ad303
+guid: e7528f3bbf1a0d74685614fe990b87aa
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: houseautre_0
+      name: pixelindoors_practice1_0
       rect:
         serializedVersion: 2
-        x: 234
-        y: 142
-        width: 207
-        height: 210
+        x: 20
+        y: 174
+        width: 150
+        height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +111,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e67dd33606b4b404b8151530a394cded
-      internalID: -1098961717
+      spriteID: 45d27049cf879a944b68efaa3e9c28b4
+      internalID: -928924129
       vertices: []
       indices: 
       edges: []
@@ -128,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      houseautre_0: -1098961717
+      pixelindoors_practice1_0: -928924129
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
