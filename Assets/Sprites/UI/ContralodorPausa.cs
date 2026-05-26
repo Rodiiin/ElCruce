@@ -32,11 +32,11 @@ public class ControladorPausa : MonoBehaviour
         
         if (AbrirMenu != null)
         {
-            AbrirMenu.speed = 1f; // 1. Descongelamos la velocidad de la animación
-            AbrirMenu.Play("AbrirMenu", 0, 0f); // 2. Forzamos a que se reproduzca desde el inicio
+            AbrirMenu.speed = 1f; 
+            AbrirMenu.Play("AbrirMenu", 0, 0f); 
         }
 
-        Time.timeScale = 0f; // Congela el juego físico (fuerzas, enemigos, etc.)
+        Time.timeScale = 0f; 
     }
 
     public void Continuar()
@@ -52,13 +52,13 @@ public class ControladorPausa : MonoBehaviour
     private IEnumerator EsperarYDesactivar()
     {
         juegoPausado = false;
-        Time.timeScale = 1f; // Reanudamos el tiempo del juego
+        Time.timeScale = 1f; 
         LogoPausa.SetActive(true); 
 
-        // Espera de 0.4 segundos para que se alcance a ver cómo se cierra la carta
+        
         yield return new WaitForSecondsRealtime(0.4f); 
 
-        Panel_Pausa.SetActive(false); // Ocultamos el panel finalizado el cierre
+        Panel_Pausa.SetActive(false); 
     }
 
     public void ReiniciarNivel()
