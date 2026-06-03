@@ -1,24 +1,33 @@
 using System.Collections;
 using UnityEngine;
 
-// Pon este script en un GameObject vacío con Box Collider 2D marcado como "Is Trigger"
-// Colócalo en el umbral de la puerta del boss
 public class TriggerEntradaBoss : MonoBehaviour
 {
-    [Header("Referencia al Boss")]
     public IntroduccionBoss introBoss;
+    public GameObject bloqueoPuerta;
+    public float delayBloqueo = 1.5f; // segundos antes de bloquear
 
     private bool activado = false;
 
+    void Start()
+    {
+        if (bloqueoPuerta != null) bloqueoPuerta.SetActive(false);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Trigger tocado por: " + other.gameObject.name + " tag: " + other.tag);
-    
-    if (activado) return;
-    if (other.CompareTag("Player") || other.CompareTag("Player2"))
-    {
-        activado = true;
-        introBoss.IniciarSecuenciaEntrada();
+        if (activado) return;
+        if (other.CompareTag("Player") || other.CompareTag("Player2"))
+        {
+            activado = true;
+            introBoss.IniciarSecuenciaEntrada();
+            StartCoroutine(ActivarBloqueo());
+        }
     }
+
+    private IEnumerator ActivarBloqueo()
+    {
+        yield return new WaitForSeconds(delayBloqueo);
+        if (bloqueoPuerta != null) bloqueoPuerta.SetActive(true);
     }
 }

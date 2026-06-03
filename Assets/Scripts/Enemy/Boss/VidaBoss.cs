@@ -9,34 +9,39 @@ public class VidaBoss : MonoBehaviour
     public int vidaActual;
 
     [Header("UI - Barra de vida")]
-    public Slider barraVida;         // Arrastra aquí tu Slider
-    public GameObject panelBarraBoss; // El panel que contiene la barra (para ocultarla antes del combate)
+    public Slider barraVida;
+    public GameObject panelBarraBoss;
+
+    [Header("Victoria")]
+    public PantallaVictoria pantallaVictoria;
 
     [Header("Fases")]
     [HideInInspector] public int faseActual = 1;
 
     [Header("Efectos")]
     public float duracionParpadeo = 0.15f;
+
     private SpriteRenderer sr;
     private Animator animator;
+    private BossFase1 bossIA;
     private bool recibiendoDanio = false;
+    private bool muerto = false;
 
     void Awake()
     {
-        sr = GetComponent<SpriteRenderer>();
+        sr       = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        bossIA   = GetComponent<BossFase1>();
         vidaActual = vidaMaxima;
     }
 
     void Start()
     {
-        // La barra empieza oculta hasta que empiece la pelea
         if (panelBarraBoss != null) panelBarraBoss.SetActive(false);
-
         if (barraVida != null)
         {
             barraVida.maxValue = vidaMaxima;
-            barraVida.value = vidaMaxima;
+            barraVida.value    = vidaMaxima;
         }
     }
 
@@ -47,46 +52,53 @@ public class VidaBoss : MonoBehaviour
 
     public void RecibirDanio(int cantidad)
     {
-        if (recibiendoDanio) return;
+        if (recibiendoDanio || muerto) return;
 
         vidaActual -= cantidad;
-        vidaActual = Mathf.Max(vidaActual, 0);
+        vidaActual  = Mathf.Max(vidaActual, 0);
 
-        // Actualizar barra
-        if (barraVida != null)
-            barraVida.value = vidaActual;
+        if (barraVida != null) barraVida.value = vidaActual;
 
-        // Parpadeo
         StartCoroutine(Parpadeo());
-
-        // Revisar fases
         ActualizarFase();
 
-        if (vidaActual <= 0)
-            Morir();
+        if (vidaActual <= 0) Morir();
     }
 
     private void ActualizarFase()
     {
-        float porcentaje = (float)vidaActual / vidaMaxima;
-
-        if (porcentaje <= 0.33f && faseActual < 3)
-        {
-            faseActual = 3;
-            Debug.Log("FASE 3");
-        }
-        else if (porcentaje <= 0.66f && faseActual < 2)
-        {
-            faseActual = 2;
-            Debug.Log("FASE 2");
-        }
+        float pct = (float)vidaActual / vidaMaxima;
+        if      (pct <= 0.33f && faseActual < 3) faseActual = 3;
+        else if (pct <= 0.66f && faseActual < 2) faseActual = 2;
     }
 
     private void Morir()
     {
-        Debug.Log("BOSS MUERTO");
-        if (animator != null) animator.SetTrigger("Death");
-        // Aquí después conectamos el fin de la pelea
+        muerto = true;
+        if (bossIA != null) bossIA.OnMuerte();
+        StartCoroutine(SecuenciaMuerte());
+    }
+
+    private IEnumerator SecuenciaMuerte()
+    {
+        // 1. Reproducir animación de muerte UNA sola vez
+        if (animator != null)
+        {
+            animator.SetTrigger("Death");
+            // Esperar a que la animación termine
+            yield return null; // un frame para que el trigger se aplique
+            AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+            // Esperar duración de la animación de muerte
+            yield return new WaitForSeconds(info.length);
+        }
+        else
+        {
+            yield return new WaitForSeconds(1.5f);
+        }
+
+        // 2. Mostrar pantalla de victoria
+        if (pantallaVictoria != null)
+            pantallaVictoria.MostrarVictoria();
     }
 
     private IEnumerator Parpadeo()

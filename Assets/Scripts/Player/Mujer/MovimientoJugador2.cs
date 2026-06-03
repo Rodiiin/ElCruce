@@ -37,6 +37,7 @@ public class MovimientoJugador2 : MonoBehaviour
     private bool atacando = false;
     private bool ataqueDisponible = true;
     private float gravedadOriginal;
+    private HitboxAtaque hitbox;
 
     void Start()
     {
@@ -45,6 +46,7 @@ public class MovimientoJugador2 : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         vida = GetComponent<VidaJugador2>();
         gravedadOriginal = rb.gravityScale;
+        hitbox = GetComponentInChildren<HitboxAtaque>();
     }
 
     void Update()
@@ -160,7 +162,19 @@ public class MovimientoJugador2 : MonoBehaviour
 
         if (animator != null) animator.SetTrigger("Attack");
 
+        yield return new WaitForSeconds(0.05f);
+
+        if (hitbox != null)
+        {
+            Vector3 pos = hitbox.transform.localPosition;
+            pos.x = spriteRenderer.flipX ? 0.5f : -0.5f;
+            hitbox.transform.localPosition = pos;
+            hitbox.ActivarHitbox();
+        }
+
         yield return new WaitForSeconds(tiempoAtaque);
+
+        if (hitbox != null) hitbox.DesactivarHitbox();
 
         atacando = false;
 
