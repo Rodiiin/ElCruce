@@ -22,7 +22,12 @@ public class PuertaAditiva : MonoBehaviour
     public GameObject nina;
 
     // Candado global para evitar el bucle infinito de entrar y salir al mismo tiempo
-    private static bool transitando = false; 
+    private static bool transitando = false;
+
+    void Awake()
+    {
+        transitando = false;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
