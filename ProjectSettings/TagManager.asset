@@ -9,6 +9,7 @@ TagManager:
   - Llave
   - Vida
   - Enemy
+  - Boss
   layers:
   - Default
   - TransparentFX

@@ -41,6 +41,7 @@ public class MovimientoUnico : MonoBehaviour
     private VidaJugador vida; // NUEVA REFERENCIA
     private float mover;
     private bool estaEnSuelo;
+    private HitboxAtaque hitbox; // Para detectar enemigos al atacar
 
     void Start()
     {
@@ -49,6 +50,7 @@ public class MovimientoUnico : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         vida = GetComponent<VidaJugador>();
+        hitbox = GetComponentInChildren<HitboxAtaque>();
 
 
         gravedadOriginal = rb.gravityScale; 
@@ -194,22 +196,34 @@ public class MovimientoUnico : MonoBehaviour
         dashDisponible = true;
     }
 
-
     private IEnumerator RealizarAtaque()
     {
         ataqueDisponible = false;
         atacando = true;
-
-        // 1. Activar animación
+ 
+        // Activar animación
         if (animator != null) animator.SetTrigger("Attack");
+ 
+        // Pequeño delay antes de activar el hitbox (sincroniza con la animación)
+        yield return new WaitForSeconds(0.05f);
 
-        // 3. Esperar duración del ataque (hitbox activa)
+        if (hitbox != null)
+        {
+        Vector3 pos = hitbox.transform.localPosition;
+        pos.x = spriteRenderer.flipX ? 0.5f : -0.5f;
+        hitbox.transform.localPosition = pos;
+        hitbox.ActivarHitbox();
+        }
+ 
+        // Hitbox activa durante el ataque
         yield return new WaitForSeconds(tiempoAtaque);
-
-        // 4. Finalizar ataque
+ 
+        // Desactivar hitbox
+        if (hitbox != null) hitbox.DesactivarHitbox();
+ 
         atacando = false;
-
-        // 5. Cooldown antes de poder atacar de nuevo
+ 
+        // Cooldown
         yield return new WaitForSeconds(cooldownAtaque);
         ataqueDisponible = true;
     }
