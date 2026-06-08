@@ -12,6 +12,11 @@ public class VidaBoss : MonoBehaviour
     public Slider barraVida;
     public GameObject panelBarraBoss;
 
+    [Header("Muerte y Salida")]
+    public DialogoBoss dialogoFinal;
+    public Transform puntoSalida;
+    public float velocidadSalida = 4f;
+
     [Header("Victoria")]
     public PantallaVictoria pantallaVictoria;
 
@@ -23,6 +28,8 @@ public class VidaBoss : MonoBehaviour
 
     private SpriteRenderer sr;
     private Animator animator;
+    private Rigidbody2D rb;
+    private Collider2D col;
     private BossFase1 bossIA;
     private bool recibiendoDanio = false;
     private bool muerto = false;
@@ -31,6 +38,8 @@ public class VidaBoss : MonoBehaviour
     {
         sr       = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        rb       = GetComponent<Rigidbody2D>();
+        col      = GetComponent<Collider2D>();
         bossIA   = GetComponent<BossFase1>();
         vidaActual = vidaMaxima;
     }
@@ -81,22 +90,47 @@ public class VidaBoss : MonoBehaviour
 
     private IEnumerator SecuenciaMuerte()
     {
-        // 1. Reproducir animación de muerte UNA sola vez
-        if (animator != null)
+        // 1. Detener al boss
+        if (rb != null) rb.velocity = Vector2.zero;
+        if (animator != null) animator.SetBool("isWalking", false);
+
+        // 2. Pausa dramática
+        yield return new WaitForSeconds(0.5f);
+
+        // 3. Ocultar barra antes del diálogo
+        if (panelBarraBoss != null) panelBarraBoss.SetActive(false);
+
+        // 4. Diálogo final
+        if (dialogoFinal != null)
         {
-            animator.SetTrigger("Death");
-            // Esperar a que la animación termine
-            yield return null; // un frame para que el trigger se aplique
-            AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
-            // Esperar duración de la animación de muerte
-            yield return new WaitForSeconds(info.length);
-        }
-        else
-        {
-            yield return new WaitForSeconds(1.5f);
+            dialogoFinal.IniciarDialogoAuto();
+            yield return new WaitUntil(() => dialogoFinal.DialogoTerminado());
         }
 
-        // 2. Mostrar pantalla de victoria
+        // 5. Quitar collider para atravesar jugadores
+        if (col != null) col.enabled = false;
+
+        // 6. Boss camina hacia el punto de salida
+        if (animator != null) animator.SetBool("isWalking", true);
+        sr.flipX = true;
+
+        if (rb != null) rb.bodyType = RigidbodyType2D.Kinematic;
+
+        float destinoX = puntoSalida != null ?
+            puntoSalida.position.x :
+            transform.position.x - 20f; // fallback si no hay punto
+
+        while (transform.position.x > destinoX)
+        {
+            rb.velocity = new Vector2(-velocidadSalida, 0f);
+            yield return null;
+        }
+
+        // 7. Desaparecer
+        rb.velocity = Vector2.zero;
+        gameObject.SetActive(false);
+
+        // 8. Pantalla de victoria
         if (pantallaVictoria != null)
             pantallaVictoria.MostrarVictoria();
     }

@@ -48,82 +48,117 @@ public class IntroduccionBoss : MonoBehaviour
 
     private IEnumerator SecuenciaCompleta()
     {
-        // 1. Bloquear jugadores y desactivar cámara
         BloquearJugadores(true);
         if (scriptCamara != null) scriptCamara.enabled = false;
 
-        // 2. Jugadores caminan a sus puntos
         yield return StartCoroutine(CaminarJugadores());
 
-        // 3. Pausa dramática
         yield return new WaitForSeconds(0.5f);
 
-        // 4. Cámara se mueve al boss con zoom
         yield return StartCoroutine(MoverCamaraAlBoss(zoomIntro));
 
-        // 5. Diálogo
         if (manejadorDialogo != null)
             manejadorDialogo.IniciarDialogoAuto();
 
         yield return StartCoroutine(EsperarDialogo());
 
-        // 6. Restaurar zoom ANTES del título
         yield return StartCoroutine(MoverCamaraAlBoss(zoomNormal));
         if (scriptCamara != null) scriptCamara.enabled = true;
 
-        // 7. Nombre del boss
         yield return StartCoroutine(AnimarNombreBoss());
 
-        // 8. Devolver control
         BloquearJugadores(false);
         introTerminada = true;
         Debug.Log("INTRO TERMINADA");
     }
 
+    private bool NinoEstaVivo()
+    {
+        if (nino == null) return false;
+        VidaJugador v = nino.GetComponent<VidaJugador>();
+        return v != null && !v.estaMuerto;
+    }
+
+    private bool NinaEstaViva()
+    {
+        if (nina == null) return false;
+        VidaJugador2 v = nina.GetComponent<VidaJugador2>();
+        return v != null && !v.estaMuerto;
+    }
+
     private IEnumerator CaminarJugadores()
     {
-        bool ninoListo = (puntoParadaNino == null);
-        bool ninaLista = (puntoParadaNina == null);
+        bool ninoListo = (puntoParadaNino == null) || !NinoEstaVivo();
+        bool ninaLista = (puntoParadaNina == null) || !NinaEstaViva();
 
         while (!ninoListo || !ninaLista)
         {
+            // — Niño —
             if (!ninoListo && nino != null)
             {
-                Vector2 dir = puntoParadaNino.position - nino.transform.position;
-                nino.transform.position = Vector2.MoveTowards(
-                    nino.transform.position, puntoParadaNino.position,
-                    velocidadCaminata * Time.deltaTime);
-                SpriteRenderer sr = nino.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.flipX = dir.x > 0;
-                Animator anim = nino.GetComponent<Animator>();
-                if (anim != null) anim.SetFloat("Speed", 1f);
-                if (Vector2.Distance(nino.transform.position, puntoParadaNino.position) < 0.05f)
+                if (!NinoEstaVivo())
                 {
                     ninoListo = true;
-                    if (anim != null) anim.SetFloat("Speed", 0f);
+                }
+                else
+                {
+                    Vector2 dir = puntoParadaNino.position - nino.transform.position;
+                    nino.transform.position = Vector2.MoveTowards(
+                        nino.transform.position, puntoParadaNino.position,
+                        velocidadCaminata * Time.deltaTime);
+                    SpriteRenderer sr = nino.GetComponent<SpriteRenderer>();
+                    if (sr != null) sr.flipX = dir.x > 0;
+                    Animator anim = nino.GetComponent<Animator>();
+                    if (anim != null) anim.SetFloat("Speed", 1f);
+                    if (Vector2.Distance(nino.transform.position, puntoParadaNino.position) < 0.05f)
+                    {
+                        ninoListo = true;
+                        if (anim != null) anim.SetFloat("Speed", 0f);
+                    }
                 }
             }
 
+            // — Niña —
             if (!ninaLista && nina != null)
             {
-                Vector2 dir = puntoParadaNina.position - nina.transform.position;
-                nina.transform.position = Vector2.MoveTowards(
-                    nina.transform.position, puntoParadaNina.position,
-                    velocidadCaminata * Time.deltaTime);
-                SpriteRenderer sr = nina.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.flipX = dir.x > 0;
-                Animator anim = nina.GetComponent<Animator>();
-                if (anim != null) anim.SetFloat("Speed", 1f);
-                if (Vector2.Distance(nina.transform.position, puntoParadaNina.position) < 0.05f)
+                if (!NinaEstaViva())
                 {
                     ninaLista = true;
-                    if (anim != null) anim.SetFloat("Speed", 0f);
+                }
+                else
+                {
+                    Vector2 dir = puntoParadaNina.position - nina.transform.position;
+                    nina.transform.position = Vector2.MoveTowards(
+                        nina.transform.position, puntoParadaNina.position,
+                        velocidadCaminata * Time.deltaTime);
+                    SpriteRenderer sr = nina.GetComponent<SpriteRenderer>();
+                    if (sr != null) sr.flipX = dir.x > 0;
+                    Animator anim = nina.GetComponent<Animator>();
+                    if (anim != null) anim.SetFloat("Speed", 1f);
+                    if (Vector2.Distance(nina.transform.position, puntoParadaNina.position) < 0.05f)
+                    {
+                        ninaLista = true;
+                        if (anim != null) anim.SetFloat("Speed", 0f);
+                    }
                 }
             }
 
-            if (camPrincipal != null && nino != null && nina != null)
+            // Cámara sigue solo al jugador vivo
+            if (camPrincipal != null)
             {
-                Vector3 medio = (nino.transform.position + nina.transform.position) / 2f;
+                Vector3 medio;
+                bool ninoVivo = NinoEstaVivo();
+                bool ninaViva = NinaEstaViva();
+
+                if (ninoVivo && ninaViva)
+                    medio = (nino.transform.position + nina.transform.position) / 2f;
+                else if (ninoVivo && nino != null)
+                    medio = nino.transform.position;
+                else if (ninaViva && nina != null)
+                    medio = nina.transform.position;
+                else
+                    medio = transform.position; // ambos muertos, apunta al boss
+
                 medio.z = camPrincipal.transform.position.z;
                 camPrincipal.transform.position = Vector3.Lerp(
                     camPrincipal.transform.position, medio, 5f * Time.deltaTime);
@@ -133,7 +168,6 @@ public class IntroduccionBoss : MonoBehaviour
         }
     }
 
-    // Mueve la cámara al boss Y hace zoom al targetSize en 1.5 segundos
     private IEnumerator MoverCamaraAlBoss(float targetSize)
     {
         if (camPrincipal == null) yield break;
@@ -152,7 +186,7 @@ public class IntroduccionBoss : MonoBehaviour
         {
             tiempoActual += Time.deltaTime;
             float t = tiempoActual / tiempoTotal;
-            t = t * t * (3f - 2f * t); // curva suave
+            t = t * t * (3f - 2f * t);
             camPrincipal.transform.position = Vector3.Lerp(posInicial, destino, t);
             camPrincipal.orthographicSize = Mathf.Lerp(zoomInicial, targetSize, t);
             yield return null;
@@ -205,6 +239,14 @@ public class IntroduccionBoss : MonoBehaviour
         {
             var mov2 = nina.GetComponent<MovimientoJugador2>();
             if (mov2 != null) mov2.enabled = !bloquear;
+        }
+
+        if (nino != null && nina != null)
+        {
+            Collider2D colNino = nino.GetComponent<Collider2D>();
+            Collider2D colNina = nina.GetComponent<Collider2D>();
+            if (colNino != null && colNina != null)
+                Physics2D.IgnoreCollision(colNino, colNina, bloquear);
         }
     }
 

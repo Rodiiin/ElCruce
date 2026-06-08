@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class TriggerEntradaBoss : MonoBehaviour
 {
+    [Header("Referencias")]
     public IntroduccionBoss introBoss;
     public GameObject bloqueoPuerta;
-    public float delayBloqueo = 1.5f; // segundos antes de bloquear
 
     private bool activado = false;
 
@@ -21,13 +21,13 @@ public class TriggerEntradaBoss : MonoBehaviour
         {
             activado = true;
             introBoss.IniciarSecuenciaEntrada();
-            StartCoroutine(ActivarBloqueo());
+            StartCoroutine(EsperarJugadoresYBloquear());
         }
     }
 
-    private IEnumerator ActivarBloqueo()
+    private IEnumerator EsperarJugadoresYBloquear()
     {
-        yield return new WaitForSeconds(delayBloqueo);
+        yield return new WaitUntil(() => introBoss.IntroTerminada());
         if (bloqueoPuerta != null) bloqueoPuerta.SetActive(true);
     }
 }

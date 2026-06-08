@@ -31,6 +31,9 @@ public class BossFase1 : MonoBehaviour
     public int   ataquesPorRafaga  = 3;
     public float radioHitboxAtaque = 0.8f;
     public Vector2 offsetHitbox    = new Vector2(1f, 0f);
+    [Range(0f, 1f)]
+    [Tooltip("En qué punto de la animación (0-1) se aplica el daño. 0.5 = mitad")]
+    public float puntoDeImpacto    = 0.5f;
 
     [Header("Ataque Proyectil - Fase 2")]
     public GameObject proyectilPrefab;
@@ -38,6 +41,8 @@ public class BossFase1 : MonoBehaviour
     public float tiempoEntreProyectiles = 0.6f;
     public float offsetYProyectil1      = 0.5f;
     public float offsetYProyectil2      = -0.5f;
+    [Tooltip("Cuántos segundos camina hacia el jugador tras disparar antes de volver a decidir")]
+    public float duracionCaminataTrasDiparo = 1.5f;
 
     [Header("Columnas de dagas - Fase 3")]
     public Transform posicionFondo;
@@ -55,7 +60,6 @@ public class BossFase1 : MonoBehaviour
     private enum Estado { Idle, Perseguir, Atacar, Disparar, Columnas, Cansado, Muerto }
     private Estado estadoActual = Estado.Idle;
 
-    private bool ultimoFueMelee    = false;
     private int  ataquesRealizados = 0;
     private bool enCorrutina       = false;
     private bool introYaTermino    = false;
@@ -133,35 +137,35 @@ public class BossFase1 : MonoBehaviour
 
             case Estado.Perseguir:
                 if (fase == 3)
+                {
                     CambiarEstado(Estado.Columnas);
+                }
                 else if (distancia <= rangoAtaque)
-                    ElegirAtaque();
+                {
+                    CambiarEstado(Estado.Atacar);
+                }
+                else if (fase >= 2)
+                {
+                    // Fase 2: dispara si está lejos, la rutina se encarga de caminar
+                    CambiarEstado(Estado.Disparar);
+                }
                 else
+                {
+                    // Fase 1: caminar hacia el jugador
                     MoverHaciaObjetivo();
+                }
                 break;
         }
     }
 
-    private void ElegirAtaque()
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    private void LimpiarTriggers()
     {
-        int fase = vidaBoss.faseActual;
-        if (fase == 1)
-        {
-            CambiarEstado(Estado.Atacar);
-        }
-        else
-        {
-            if (!ultimoFueMelee)
-            {
-                ultimoFueMelee = true;
-                CambiarEstado(Estado.Atacar);
-            }
-            else
-            {
-                ultimoFueMelee = false;
-                CambiarEstado(Estado.Disparar);
-            }
-        }
+        animator.ResetTrigger("Attack");
+        animator.ResetTrigger("Hurt");
+        animator.ResetTrigger("Cast");
+        animator.ResetTrigger("Death");
     }
 
     private void ActualizarObjetivo()
@@ -188,6 +192,8 @@ public class BossFase1 : MonoBehaviour
         if (v2 != null) return !v2.estaMuerto;
         return true;
     }
+
+    // ── ESTADOS ───────────────────────────────────────────────────────────────
 
     void CambiarEstado(Estado nuevoEstado)
     {
@@ -227,6 +233,8 @@ public class BossFase1 : MonoBehaviour
         rb.velocity = new Vector2(Mathf.Sign(dir) * velocidadCaminata, rb.velocity.y);
     }
 
+    // ── CORRUTINAS ────────────────────────────────────────────────────────────
+
     private IEnumerator RutinaAtaque()
     {
         enCorrutina = true;
@@ -247,12 +255,14 @@ public class BossFase1 : MonoBehaviour
             }
 
             sr.flipX = (jugadorObjetivo.position.x - transform.position.x) < 0;
+
+            LimpiarTriggers();
             animator.SetTrigger("Attack");
 
-            yield return null;
-            yield return new WaitForSeconds(duracionAtaque * 0.5f);
+            yield return new WaitForSeconds(duracionAtaque * puntoDeImpacto);
             AplicarDanioCercano();
-            yield return new WaitForSeconds(duracionAtaque * 0.5f + cooldownAtaque);
+            yield return new WaitForSeconds(duracionAtaque * (1f - puntoDeImpacto) + cooldownAtaque);
+
             ataquesRealizados++;
         }
 
@@ -265,19 +275,54 @@ public class BossFase1 : MonoBehaviour
     {
         enCorrutina = true;
         rb.velocity = Vector2.zero;
-        animator.SetTrigger("Cast");
 
+        // Disparar 3 veces
         for (int i = 0; i < proyectilesPorRafaga; i++)
         {
             ActualizarObjetivo();
             if (jugadorObjetivo == null) break;
+
             sr.flipX = (jugadorObjetivo.position.x - transform.position.x) < 0;
+            LimpiarTriggers();
+            animator.SetTrigger("Cast");
             LanzarParProyectiles();
+
             yield return new WaitForSeconds(tiempoEntreProyectiles);
         }
 
+        // Caminar hacia el jugador por duracionCaminataTrasDiparo segundos
+        animator.SetBool("isWalking", true);
+        float tiempoCaminando = 0f;
+
+        while (tiempoCaminando < duracionCaminataTrasDiparo)
+        {
+            ActualizarObjetivo();
+            if (jugadorObjetivo == null) break;
+
+            float dist = Vector2.Distance(transform.position, jugadorObjetivo.position);
+
+            // Si llega al rango melee, salir a atacar directamente
+            if (dist <= rangoAtaque)
+            {
+                animator.SetBool("isWalking", false);
+                enCorrutina = false;
+                CambiarEstado(Estado.Atacar);
+                yield break;
+            }
+
+            float dir = jugadorObjetivo.position.x - transform.position.x;
+            sr.flipX = dir < 0;
+            rb.velocity = new Vector2(Mathf.Sign(dir) * velocidadCaminata, rb.velocity.y);
+
+            tiempoCaminando += Time.deltaTime;
+            yield return null;
+        }
+
+        // Terminó de caminar y sigue lejos → volver a disparar
+        rb.velocity = Vector2.zero;
+        animator.SetBool("isWalking", false);
         enCorrutina = false;
-        CambiarEstado(Estado.Cansado);
+        CambiarEstado(Estado.Disparar);
     }
 
     private IEnumerator RutinaColumnas()
@@ -285,26 +330,21 @@ public class BossFase1 : MonoBehaviour
         enCorrutina = true;
         seriesLanzadas = 0;
 
-        // 1. Moverse al fondo solo en X
         if (posicionFondo != null)
         {
             animator.SetBool("isWalking", true);
             while (true)
             {
                 float distX = Mathf.Abs(transform.position.x - posicionFondo.position.x);
-
                 if (distX <= 0.1f)
                 {
                     rb.velocity = Vector2.zero;
-                    // Fijar posición exacta en X
                     transform.position = new Vector3(
                         posicionFondo.position.x,
                         transform.position.y,
-                        transform.position.z
-                    );
+                        transform.position.z);
                     break;
                 }
-
                 float dir = posicionFondo.position.x - transform.position.x;
                 sr.flipX = dir < 0;
                 rb.velocity = new Vector2(Mathf.Sign(dir) * velocidadIrAlFondo, rb.velocity.y);
@@ -313,17 +353,15 @@ public class BossFase1 : MonoBehaviour
             animator.SetBool("isWalking", false);
         }
 
-        // 2. Garantizar estado Columnas
         estadoActual = Estado.Columnas;
 
-        // 3. Orientarse hacia jugadores
         ActualizarObjetivo();
         if (jugadorObjetivo != null)
             sr.flipX = (jugadorObjetivo.position.x - transform.position.x) < 0;
 
-        // 4. Loop columnas
         while (estadoActual == Estado.Columnas)
         {
+            LimpiarTriggers();
             animator.SetTrigger("Cast");
             yield return new WaitForSeconds(0.3f);
 
@@ -338,6 +376,7 @@ public class BossFase1 : MonoBehaviour
             if (seriesLanzadas >= seriesPorPausa)
             {
                 seriesLanzadas = 0;
+                LimpiarTriggers();
                 animator.SetTrigger("Hurt");
                 yield return new WaitForSeconds(duracionPausaFase3);
             }
@@ -348,6 +387,62 @@ public class BossFase1 : MonoBehaviour
         }
 
         enCorrutina = false;
+    }
+
+    private IEnumerator RutinaCansancio()
+    {
+        enCorrutina = true;
+        rb.velocity = Vector2.zero;
+
+        LimpiarTriggers();
+        animator.SetTrigger("Hurt");
+
+        yield return new WaitForSeconds(duracionCansancio);
+
+        enCorrutina = false;
+        CambiarEstado(Estado.Perseguir);
+    }
+
+    // ── DAÑO ─────────────────────────────────────────────────────────────────
+
+    private void AplicarDanioCercano()
+    {
+        float ladoX    = sr.flipX ? -1f : 1f;
+        Vector2 centro = (Vector2)transform.position + new Vector2(offsetHitbox.x * ladoX, offsetHitbox.y);
+        Collider2D[] golpeados = Physics2D.OverlapCircleAll(centro, radioHitboxAtaque);
+
+        foreach (Collider2D c in golpeados)
+        {
+            Vector2 dir = (c.transform.position - transform.position).normalized;
+            if (c.CompareTag("Player"))
+            {
+                VidaJugador v = c.GetComponent<VidaJugador>();
+                if (v != null) v.RecibirDaño(dir);
+            }
+            if (c.CompareTag("Player2"))
+            {
+                VidaJugador2 v = c.GetComponent<VidaJugador2>();
+                if (v != null) v.RecibirDaño(dir);
+            }
+        }
+    }
+
+    private void LanzarParProyectiles()
+    {
+        if (proyectilPrefab == null || jugadorObjetivo == null) return;
+
+        float dirX = jugadorObjetivo.position.x - transform.position.x;
+        Vector2 direccion = new Vector2(Mathf.Sign(dirX), 0f);
+
+        Vector2 origen1 = (Vector2)transform.position + new Vector2(0f, offsetYProyectil1);
+        GameObject p1 = Instantiate(proyectilPrefab, origen1, Quaternion.identity);
+        NavajaVuelo n1 = p1.GetComponent<NavajaVuelo>();
+        if (n1 != null) n1.Configurar(direccion, origen1);
+
+        Vector2 origen2 = (Vector2)transform.position + new Vector2(0f, offsetYProyectil2);
+        GameObject p2 = Instantiate(proyectilPrefab, origen2, Quaternion.identity);
+        NavajaVuelo n2 = p2.GetComponent<NavajaVuelo>();
+        if (n2 != null) n2.Configurar(direccion, origen2);
     }
 
     private void LanzarColumna(int indiceColumna)
@@ -376,55 +471,7 @@ public class BossFase1 : MonoBehaviour
         }
     }
 
-    private void LanzarParProyectiles()
-    {
-        if (proyectilPrefab == null || jugadorObjetivo == null) return;
-
-        float dirX = jugadorObjetivo.position.x - transform.position.x;
-        Vector2 direccion = new Vector2(Mathf.Sign(dirX), 0f);
-
-        Vector2 origen1 = (Vector2)transform.position + new Vector2(0f, offsetYProyectil1);
-        GameObject p1 = Instantiate(proyectilPrefab, origen1, Quaternion.identity);
-        NavajaVuelo n1 = p1.GetComponent<NavajaVuelo>();
-        if (n1 != null) n1.Configurar(direccion, origen1);
-
-        Vector2 origen2 = (Vector2)transform.position + new Vector2(0f, offsetYProyectil2);
-        GameObject p2 = Instantiate(proyectilPrefab, origen2, Quaternion.identity);
-        NavajaVuelo n2 = p2.GetComponent<NavajaVuelo>();
-        if (n2 != null) n2.Configurar(direccion, origen2);
-    }
-
-    private IEnumerator RutinaCansancio()
-    {
-        enCorrutina = true;
-        rb.velocity = Vector2.zero;
-        animator.SetTrigger("Hurt");
-        yield return new WaitForSeconds(duracionCansancio);
-        enCorrutina = false;
-        CambiarEstado(Estado.Perseguir);
-    }
-
-    private void AplicarDanioCercano()
-    {
-        float ladoX    = sr.flipX ? -1f : 1f;
-        Vector2 centro = (Vector2)transform.position + new Vector2(offsetHitbox.x * ladoX, offsetHitbox.y);
-        Collider2D[] golpeados = Physics2D.OverlapCircleAll(centro, radioHitboxAtaque);
-
-        foreach (Collider2D c in golpeados)
-        {
-            Vector2 dir = (c.transform.position - transform.position).normalized;
-            if (c.CompareTag("Player"))
-            {
-                VidaJugador v = c.GetComponent<VidaJugador>();
-                if (v != null) v.RecibirDaño(dir);
-            }
-            if (c.CompareTag("Player2"))
-            {
-                VidaJugador2 v = c.GetComponent<VidaJugador2>();
-                if (v != null) v.RecibirDaño(dir);
-            }
-        }
-    }
+    // ── LLAMADOS EXTERNOS ─────────────────────────────────────────────────────
 
     public void OnHit()
     {
@@ -432,6 +479,7 @@ public class BossFase1 : MonoBehaviour
         if (estadoActual == Estado.Atacar)
         {
             StopAllCoroutines();
+            LimpiarTriggers();
             ataquesRealizados = 0;
             enCorrutina = false;
             CambiarEstado(Estado.Perseguir);
@@ -442,9 +490,12 @@ public class BossFase1 : MonoBehaviour
     {
         estadoActual = Estado.Muerto;
         StopAllCoroutines();
+        LimpiarTriggers();
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
     }
+
+    // ── GIZMOS ────────────────────────────────────────────────────────────────
 
     private void OnDrawGizmosSelected()
     {
