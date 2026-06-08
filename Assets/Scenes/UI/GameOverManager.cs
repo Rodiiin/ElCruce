@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -46,8 +47,8 @@ public class GameOverManager : MonoBehaviour
         if (audioSource != null && musicaGameOver != null)
         {
             audioSource.ignoreListenerPause = true; // este sí se escucha aunque el juego esté pausado
-        audioSource.clip = musicaGameOver;
-        audioSource.Play();
+            audioSource.clip = musicaGameOver;
+            audioSource.Play();
         }
     
         if (panelGameOver != null) panelGameOver.SetActive(true);
@@ -55,16 +56,21 @@ public class GameOverManager : MonoBehaviour
 
     public void Reintentar()
     {
+        // Restauramos el flujo del audio y el tiempo ANTES de la transición
         AudioListener.pause = false;
         Time.timeScale = 1f;
+
+        // Recargamos la misma escena actual directamente
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void MenuPrincipal()
     {
+        // Restauramos el flujo del audio y el tiempo ANTES de la transición
         AudioListener.pause = false;
         Time.timeScale = 1f;
-        SceneManager.LoadScene(0); // cambia el 0 por el índice de tu menú principal
+
+        // Viajamos al menú principal directamente
+        SceneManager.LoadScene("MainMenu");
     }
-    
 }
